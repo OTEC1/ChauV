@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">chaüV</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="email_registration">Sign up</string>
+    <string name="prompt_password">Password </string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_name">Name</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="register">Vendor  Registration</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign up</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="google_api_key05">AIzaSyAsgMEJ-1IsWs81t1PEKy5rsb4dct2SAtU</string>
+    <string name="business_name">Business name</string>
+    <string name="Vendor_reg">Vendor Registration</string>
+    <string name="Vendor_loc">Vendor Locations</string>
+    <string name="vendor_uploads">Vendor Uploads</string>
+    <string name="title_activity_business_details">Business_details</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:onClick="space"
+    android:background="@color/colorPrimary"
+    tools:context=".UI.Top_section">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:onClick="space"
+        android:layout_height="match_parent">
+
+
+        <TextView
+            android:id="@+id/fragment"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_marginBottom="5dp"
+            android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:textColor="#ffffff"
+            android:text="CHAÜVENDOR"
+            android:textSize="18dp" />
+
+
+        <ImageButton
+            android:id="@+id/sign_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="7dp"
+            android:background="@android:color/transparent"
+            android:onClick="showPopup"
+            android:padding="10dp"
+            android:src="@drawable/ic_baseline_more_vert_24" />
+
+
+
+
+    </RelativeLayout>
+
+</FrameLayout>
