@@ -313,7 +313,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 
         int  res= Integer.parseInt(response)+Integer.parseInt(price);
         //message2("Final"+res+"  "+response);
-        DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(sp.getString("user_email", ""))).document();
+        DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
         Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key,string,FirebaseAuth.getInstance().getUid(),0,0, reference.getId());
         reference.set(uploads).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
