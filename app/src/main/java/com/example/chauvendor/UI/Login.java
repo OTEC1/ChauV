@@ -67,7 +67,7 @@ public class Login extends AppCompatActivity {
     //Step 4
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Pls turn off GPS to resit location, do you want to turn off ?")
+        builder.setMessage("Pls turn off GPS to reset location, do you want to turn off ?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
