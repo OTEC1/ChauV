@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/do_app"
+    android:background="@mipmap/chau_vendor"
     android:onClick="space"
     tools:context=".UI.Login">
 

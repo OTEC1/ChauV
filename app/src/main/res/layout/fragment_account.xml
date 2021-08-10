@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/do_app"
+    android:background="@mipmap/chau_vendor"
     tools:context=".UI.account">
 
 
@@ -115,6 +115,7 @@
                             android:layout_margin="10dp"
                             android:background="@android:color/transparent"
                             android:drawableTop="@drawable/ic_baseline_bubble_chart_24"
+                            android:gravity="center_horizontal"
                             android:text="Review"
                             android:textAlignment="center"
                             android:textAllCaps="false"

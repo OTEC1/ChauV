@@ -3,7 +3,7 @@ package com.example.chauvendor.model;
 public class Vendor_uploads {
 
   public   String food_name,img_url,category,uid,doc;
-  public  int likes,views,food_price;
+  public  int likes,dislikes,views,food_price;
 
 
 
@@ -12,7 +12,7 @@ public class Vendor_uploads {
     }
 
 
-    public Vendor_uploads(int food_price, String food_name, String img_url, String category, String uid, int likes, int views, String doc) {
+    public Vendor_uploads(int food_price, String food_name, String img_url, String category, String uid, int likes, int views, String doc,int dislikes) {
         this.food_price = food_price;
         this.food_name = food_name;
         this.img_url = img_url;
@@ -21,5 +21,6 @@ public class Vendor_uploads {
         this.likes = likes;
         this.views = views;
         this.doc = doc;
+        this.dislikes = dislikes;
     }
 }

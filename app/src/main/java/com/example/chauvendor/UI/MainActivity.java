@@ -43,7 +43,7 @@ import static com.example.chauvendor.constant.Constants.*;
 public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sp;
-    private  String TAG ="MainActivity";
+    private  String TAG = "MainActivity";
     private boolean mLocationPermissionGranted = false,decision=false;
     private BottomNavigationView bottomNav;
     private static long back_pressed;
@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean decide = false;
     private FirebaseFirestore mfirestore;
     private UserLocation muserLocation;
-    private  RelativeLayout fragmentlayout,framelayout;
 
 
 
@@ -68,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         decide =true;
     }
+
+
 
     //----------------------------------------------Permission for   file sharing ---------------------------------------------//
     //Step 1
@@ -138,34 +139,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     //----------------------------------------------End of file sharing ---------------------------------------------//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNav =(BottomNavigationView) findViewById(R.id.bottomNav);
-        fragmentlayout = (RelativeLayout) findViewById(R.id.header);
-        framelayout = (RelativeLayout) findViewById(R.id.sections);
         openFragment(new home());
         Get_instance();
         policy();
@@ -185,22 +164,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.homes:
-                        expandMapAnimation();
-
                         decide = true;
                         openFragment(new home());
                         return true;
                     case R.id.carts:
-                        if(!decision)
-                            contractMapAnimation();
-
                         decide = false;
                         openFragment(new notification());
                         return true;
                     case R.id.notification:
-                        if(!decision)
-                            contractMapAnimation();
-
                         decide = false;
                         openFragment(new account());
                         return true;
@@ -217,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
-
 
 
     @Override
@@ -252,11 +222,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-
     private  void message1(String s){
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
@@ -277,56 +242,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    void contractMapAnimation(){
-        ViewHeightAnimation mapAnimationWrapper = new ViewHeightAnimation(fragmentlayout);
-        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
-                "weight",
-                22,
-                12);
-        mapAnimation.setDuration(800);
-
-        ViewHeightAnimation recyclerAnimationWrapper = new ViewHeightAnimation(framelayout);
-        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
-                "weight",
-                78,
-                88);
-        recyclerAnimation.setDuration(10);
-        recyclerAnimation.start();
-        mapAnimation.start();
-        decision =true;
-    }
-
-
-
-    void  expandMapAnimation(){
-
-        ViewHeightAnimation mapAnimationWrapper = new ViewHeightAnimation(fragmentlayout);
-        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
-                "weight",
-                12,
-                20);
-        mapAnimation.setDuration(0);
-
-        ViewHeightAnimation recyclerAnimationWrapper = new ViewHeightAnimation(framelayout);
-        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
-                "weight",
-                88,
-                80);
-        recyclerAnimation.setDuration(0);
-        recyclerAnimation.start();
-        mapAnimation.start();
-        decision = false;
-    }
-
     public void signin(MenuItem item) { startActivity(new Intent(this, Login.class).putExtra("check_view",String.valueOf(2))); }
 
     public void signout(MenuItem item) { sp.edit().putString("KOS",null).apply(); Log.d(TAG,"Sign out");}
 
+
     public void search(MenuItem item) {
         decide = false;
         openFragment(new Search());
-        if(!decision)
-            contractMapAnimation();
     }
 
     public void space(View view) {

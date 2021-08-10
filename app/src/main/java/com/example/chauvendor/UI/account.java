@@ -48,6 +48,7 @@ import com.example.chauvendor.R;
 import com.example.chauvendor.constant.Constants;
 import com.example.chauvendor.model.Vendor_uploads;
 import com.example.chauvendor.util.Find;
+import com.example.chauvendor.util.utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,9 +78,9 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     private Spinner spinner;
     private ProgressBar progressBar,progressBar1,progressBar_img;
 
-     private boolean confirm = false, verified = false;
-     private  String string="Indicate", p1,p2,p3,TAG ="accountFragment";
-     private  static  String responsed="";
+    private boolean confirm = false, verified = false;
+    private  String string="Indicate", p1,p2,p3,TAG ="accountFragment";
+    private  static  String responsed="";
 
 
     private FirebaseFirestore mfirebaseFirestore;
@@ -219,11 +220,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
                 if (task.isSuccessful()) {
                     shopname.setText(String.valueOf(task.getResult().get("name")));
                     progressBar1.setVisibility(View.GONE);
-                    RequestOptions requestOptions = new RequestOptions()
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true);
-
-                    img_load(requestOptions,task);
+                    new utils().img_load(getActivity(),String.valueOf(task.getResult().get("img_url")),progressBar_img,vendor_img);
                 }
             }});
 
@@ -235,26 +232,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 
 
 
-     private void img_load(RequestOptions requestOptions, Task<DocumentSnapshot> task) {
-         Glide.with(getContext())
-                 .load(Constants.IMG_URL.concat(String.valueOf(task.getResult().get("img_url"))))
-                 .listener(new RequestListener<Drawable>() {
-                     @Override
-                     public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                         progressBar_img.setVisibility(View.GONE);
-                         return false;
-                     }
 
-                     @Override
-                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                         progressBar_img.setVisibility(View.GONE);
-                         return false;
-                     }
-                 })
-                 .apply(requestOptions)
-                 .into(vendor_img);
-
-     }
 
 
 
@@ -314,7 +292,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
         int  res= Integer.parseInt(response)+Integer.parseInt(price);
         //message2("Final"+res+"  "+response);
         DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
-        Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key,string,FirebaseAuth.getInstance().getUid(),0,0, reference.getId());
+        Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key,string,FirebaseAuth.getInstance().getUid(),0,0, reference.getId(),0);
         reference.set(uploads).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
