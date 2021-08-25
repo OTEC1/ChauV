@@ -22,6 +22,11 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="DEVICE_TOKEN">device_token</string>
+    <string name="DEVICE_REG_TOKEN">device_reg_token</string>
+    <string name="VENDOR_NAME">vendor_name</string>
+    <string name="VENDOR_IMG_URL">VENDOR_IMG_URL</string>
+    <string name="LAST_SIGN_IN_USER">LAST_SIGN_IN_USER</string>
 
 
 </resources>

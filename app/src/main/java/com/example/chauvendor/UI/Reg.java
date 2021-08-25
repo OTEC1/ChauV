@@ -46,6 +46,7 @@ import com.example.chauvendor.model.User;
 import com.example.chauvendor.model.UserLocation;
 import com.example.chauvendor.util.Find;
 import com.example.chauvendor.util.UserClient;
+import com.example.chauvendor.util.utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.LocationCallback;
@@ -54,11 +55,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -73,50 +71,45 @@ import static com.example.chauvendor.constant.Constants.*;
 public class Reg extends AppCompatActivity {
 
 
-    private EditText editText1,editText2,editText3,editText4,editText5;
-    private Button button_reg,button1;
+    private EditText editText1, editText2, editText3, editText4, editText5;
+    private Button button_reg, button1;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list;
     private Spinner spinner;
-    private String string,p1,p2,p3,in;
+
     private ProgressBar mprogressBar;
     private SharedPreferences sp;
-    private static final String TAG = "RegisterActiviy";
+
     private UserLocation muserLocation;
-    private boolean mLocationPermissionGranted = false, once = false, confirm = false;
     private FirebaseFirestore mfirestore;
+    private GeoPoint geoPoint;
     private Uri imgUri;
-    private  int z;
+
+
+    private int z;
+    private String string, p1, p2, p3, img_url;
+    private static final String TAG = "RegisterActiviy";
+    private boolean mLocationPermissionGranted = false, once = false, confirm = false;
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        Get_instance();
-        start_pref();
+        mfirestore = FirebaseFirestore.getInstance();
         if (!mLocationPermissionGranted)
             checkMapServices();
+        getLast_know_Location(FirebaseAuth.getInstance().getUid(), 0);
+
 
     }
 
     @Override
     public void onBackPressed() {
-        if(once)
-            message2("Pls wait Registration in progress...");
+        if (once)
+            message_reg("Pls wait Registration in progress...");
         else
             super.onBackPressed();
     }
-
-
-
-
-
-    private void Get_instance() {
-        mfirestore = FirebaseFirestore.getInstance();
-    }
-    private  void  start_pref(){ sp = (getApplicationContext()).getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE); }
-
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -132,47 +125,39 @@ public class Reg extends AppCompatActivity {
         button_reg = (Button) findViewById(R.id.btn_register);
         spinner = (Spinner) findViewById(R.id.vendor_category);
         mprogressBar = (ProgressBar) findViewById(R.id.progressBar);
-        button1 = (Button)  findViewById(R.id.pic_selector);
+        button1 = (Button) findViewById(R.id.pic_selector);
 
-        Get_instance();
-        start_pref();
+        mfirestore = FirebaseFirestore.getInstance();
         drop_down_populate();
 
 
-
-
-
-
-        button_reg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {  z=0;
-                if(verify() && confirm) {
-                    String pic_key = getFile_extension(imgUri);
-                    if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
-                        in = generate_name().concat(".png");
-                        make_post_on_location( editText2.getText().toString(), editText4.getText().toString());
-                    }
-                    else
-                        message2("Invalid  File Selected");
-                }
-                else
-                if(!confirm && z!=1)
-                    message2("Pls select an image File");
-
+        button_reg.setOnClickListener(view -> {
+            if (!new utils().instantiate_shared_preferences(sp, getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
+                message_reg("Device not Registered Pls Relaunch or Reinstall App.");
+            else {
+                if (checkMapServices()) {
+                    if (mLocationPermissionGranted) { z = 0;
+                        if (verify() && confirm && TOKEN_OK()) {
+                            String pic_key = getFile_extension(imgUri);
+                            if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
+                                img_url = generate_name().concat(".png");
+                                make_post_on_location(editText2.getText().toString(), editText4.getText().toString());
+                            } else
+                                message_reg("Invalid  File Selected");
+                        } else if (!TOKEN_OK())
+                            message_reg("Pls Reinstall App");
+                        else if (!confirm && z != 1)
+                            message_reg("Pls select an image File");
+                    }else
+                     message_reg("Pls Reinstall and Grant all Permission");
+                } else
+                    getLocationPermission();
             }
+
         });
 
 
-
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                file_picker(view);
-            }
-        });
-
-
+        button1.setOnClickListener(this::file_picker);
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -188,122 +173,83 @@ public class Reg extends AppCompatActivity {
         });
     }
 
+    private boolean TOKEN_OK() {
+        return new utils().instantiate_shared_preferences(sp, getApplicationContext())
+                .getString(getString(R.string.DEVICE_TOKEN), "").trim().length() > 0;
+    }
 
 
-
-
-
-    private void make_post_on_location( String email, String pass) {
+    private void make_post_on_location(String email, String pass) {
         show_progress();
         once = true;
         button_reg.setEnabled(false);
-        Log.d(TAG," Register member");
-        message2("Registering member");
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email,pass)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        String email = editText2.getText().toString();
-                        if(task.isSuccessful()) {
-                            User user = new User();
-                            user.setName(editText1.getText().toString());
-                            user.setEmail(email);
-                            user.setUsername(email.substring(0, email.indexOf("@")));
-                            user.setPhone(editText3.getText().toString());
-                            user.setUser_id(FirebaseAuth.getInstance().getUid());
-                            user.setMember_T("I agree to Terms and Condition");
-                            user.setApp_user(string);
-                            user.setImg_url(in);
-                            user.setGood(0);
-                            user.setBad(0);
-                            user.setFair(0);
+        message_reg("Registering member");
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(task -> {
+                    String email1 = editText2.getText().toString();
+                    if (task.isSuccessful()) {
+                        User user = new User();
+                        user.setName(editText1.getText().toString());
+                        user.setEmail(email1);
+                        user.setUsername(email1.substring(0, email1.indexOf("@")));
+                        user.setPhone(editText3.getText().toString());
+                        user.setUser_id(FirebaseAuth.getInstance().getUid());
+                        user.setMember_T("I agree to Terms and Condition");
+                        user.setApp_user(string);
+                        user.setImg_url(img_url);
+                        user.setToken(new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
+                        user.setGood(0);
+                        user.setBad(0);
+                        user.setFair(0);
+
+                        DocumentReference new_member = mfirestore.collection(getString(R.string.Vendor_reg)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
+                        new_member.set(user).addOnCompleteListener(task1 -> {
 
 
-                            DocumentReference new_member = mfirestore.collection(getString(R.string.Vendor_reg)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
+                            if (task1.isSuccessful())
+                                getUserDetails(FirebaseAuth.getInstance().getUid());
+                            else {
+                                message_reg("Something went wrong.");
+                                hide_bar();
+                                button_reg.setEnabled(true);
+                            }
+                        });
 
-                            new_member.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-
-
-                                    if(task.isSuccessful()) {
-
-                                        if (checkMapServices()) {
-                                            if (mLocationPermissionGranted) {
-                                                getUserDetails(FirebaseAuth.getInstance().getUid());
-                                                getLast_know_Location(FirebaseAuth.getInstance().getUid());
-                                            } else
-                                                getLocationPermission();
-                                        }
-
-
-
-                                    }else {
-                                        message2("Something went wrong.");
-                                        hide_bar();
-                                        button_reg.setEnabled(true);
-                                    }
-                                }
-                            });
-
-                        }
-                        else {
-                            message2("Error "+task.getException());
-                            hide_bar();
-                            button_reg.setEnabled(true);
-                        }
+                    } else {
+                        message(task.getException());
+                        hide_bar();
+                        button_reg.setEnabled(true);
                     }
                 });
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //---------------------------------Location----------------------------------//
 
     //Step 1
-    private boolean checkMapServices(){
-        if(isServicesOK())
-            if(isMapsEnabled())
+    private boolean checkMapServices() {
+        if (isServicesOK())
+            if (isMapsEnabled())
                 return true;
         return false;
     }
 
 
     //Step 2
-    public boolean isServicesOK(){
+    public boolean isServicesOK() {
         Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(Reg.this);
 
-        if(available == ConnectionResult.SUCCESS){
+        if (available == ConnectionResult.SUCCESS) {
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
-        }
-        else
-        if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+        } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(Reg.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
-        }else{
+        } else {
             Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -311,14 +257,14 @@ public class Reg extends AppCompatActivity {
 
 
     //Step 3
-    public boolean isMapsEnabled(){
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+    public boolean isMapsEnabled() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
             return false;
-        }else {
+        } else {
             //sp.edit().putString("states","Ok").apply();
-            Log.d(TAG," Added Location Permission");
+            Log.d(TAG, " Added Location Permission");
             return true;
         }
     }
@@ -339,8 +285,6 @@ public class Reg extends AppCompatActivity {
     }
 
 
-
-
     //Media selector  Custom ui
     public void file_picker(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
@@ -350,7 +294,6 @@ public class Reg extends AppCompatActivity {
     }
 
 
-
     //Step 5
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -358,10 +301,10 @@ public class Reg extends AppCompatActivity {
         Log.d(TAG, "onActivityResult: called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if(mLocationPermissionGranted) {
+                if (mLocationPermissionGranted) {
                     //sp.edit().putString("states","Ok").apply();
-                    Log.d(TAG," Added Location Permission");
-                }else
+                    Log.d(TAG, " Added Location Permission");
+                } else
                     getLocationPermission();
 
             }
@@ -376,13 +319,10 @@ public class Reg extends AppCompatActivity {
                 button1.setText("Image Added Proceed to Registration");
                 confirm = true;
             } else
-                message2("No Image Selected.");
+                new utils().message2("No Image Selected.", this);
         }
 
     }
-
-
-
 
 
     private void getLocationPermission() {
@@ -400,127 +340,114 @@ public class Reg extends AppCompatActivity {
     }
 
 
-
-
-
     //Step 2
-    private  void  getUserDetails(final String sp){
-        if(muserLocation == null) {
-            muserLocation = new UserLocation();
-            DocumentReference userref = mfirestore.collection(getString(R.string.Vendor_reg))
-                    .document(sp);
-            userref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, " onComplete successfully got details");
-                        message2("Member Registered");
-                        // System.out.println(task.getResult().getData());
-                        User user = task.getResult().toObject(User.class);
-                        if (user == null)
-                            return;
+    private void getUserDetails(final String user_id) {
 
-                        muserLocation.setUser(user);
-                        muserLocation.setTimestamp(null);
-                        ((UserClient) getApplicationContext()).setUser(user);
-                        getLast_know_Location(sp);
-                    }
-                }
-            });
-        }else
-            getLast_know_Location(sp);
+        muserLocation = new UserLocation();
+        DocumentReference userref = mfirestore.collection(getString(R.string.Vendor_reg)).document(user_id);
+        userref.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d(TAG, " onComplete successfully got details");
+                message_reg("Member Registered");
+                // System.out.println(task.getResult().getData());
+                User user = task.getResult().toObject(User.class);
+                if (user == null)
+                    return;
+
+                muserLocation.setUser(user);
+                muserLocation.setTimestamp(null);
+                ((UserClient) getApplicationContext()).setUser(user);
+                getLast_know_Location(user_id, 1);
+            }
+        });
+
+    }
+
+    private void message_reg(String s) {
+        new utils().message2(s, this);
     }
 
 
     //Step 3
-    private void getLast_know_Location(final String vs) {
-        Log.d(TAG," requesting for last known location");
-        message2("Requesting for user location");
+    private void getLast_know_Location(final String vs, int i) {
+        if (i != 0)
+            new utils().message2("Requesting for Vendor location", this);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
 
 
-        LocationRequest mLocationRequest= LocationRequest.create();
-        mLocationRequest.setInterval(60000);
-        mLocationRequest.setFastestInterval(50000);
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        LocationCallback mLocationCallback =new LocationCallback() {
+        LocationCallback mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                if(locationResult == null)
-                    return;
 
-                for(Location location: locationResult.getLocations()){
-                    if(location != null){
-                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        Log.d(TAG, "on complete Lat" + geoPoint.getLatitude());
-                        Log.d(TAG, "on complete Lat" + geoPoint.getLongitude());
-                        muserLocation.setGeo_point(geoPoint);
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        if (muserLocation != null)
+                            muserLocation.setGeo_point(geoPoint);
 
-                        if(STOP_SERVICE == 0)
+                        if (STOP_SERVICE == 0 && i != 0) {
                             saveUserLocation(vs);
-                        STOP_SERVICE = 2;
+                            STOP_SERVICE = 2;
+                        }
 
                     }
-                }}};
+                }
+            }
+        };
 
         LocationServices.getFusedLocationProviderClient(getApplicationContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+
+
     }
-
-
-
 
 
     //Step 4
-    private  void saveUserLocation(String x){
+    private void saveUserLocation(String x) {
 
-        if(muserLocation != null) {
-            DocumentReference locationref = mfirestore.collection(getString(R.string.Vendor_loc))
-                    .document(x);
-            locationref.set(muserLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        sp.edit().putString("KOS",null).apply();
-                        Log.d(TAG, "Lat"+muserLocation.getGeo_point().getLatitude());
-                        Log.d(TAG, "long"+muserLocation.getGeo_point().getLongitude());
-                        credentials();
-                    }else {
-                        hide_progress();
-                        message2("Failed " + task.getException());
-                        button_reg.setEnabled(false);
-                    }
+        if (muserLocation != null) {
+            DocumentReference locationref = mfirestore.collection(getString(R.string.Vendor_loc)).document(x);
+            locationref.set(muserLocation).addOnCompleteListener(task -> {
+                if (task.isSuccessful())
+                    credentials();
+                else {
+                    hide_progress();
+                    message(Objects.requireNonNull(task.getException()));
+                    button_reg.setEnabled(false);
                 }
             });
-        }}
+        }
+    }
+
+    //-----------------------------------------------End of Location Query------------------------------------//
 
 
-
-
-
+    //-----------------------------------------------S3 Query------------------------------------//
 
     private void credentials() {
 
-        DocumentReference user =mfirestore.collection("east").document("lab");
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    p1 = task.getResult().getString("p1");
-                    p2 = task.getResult().getString("p2");
-                    p3 = task.getResult().getString("p3");
-                    try {
-                        if(p1.length()>0 && p2.length()>0 && p3.length()>0)
-                            send_data_to_s3(p1,p2,p3,in);
-                    } catch (Exception e) {
-                        message2(e.toString());
-                        Log.d(TAG,e.toString());
-                        hide_progress();
-                    }}}});
+        DocumentReference user = mfirestore.collection("east").document("lab");
+        user.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                p1 = task.getResult().getString("p1");
+                p2 = task.getResult().getString("p2");
+                p3 = task.getResult().getString("p3");
+                try {
+                    if (p1.length() > 0 && p2.length() > 0 && p3.length() > 0)
+                        send_data_to_s3(p1, p2, p3, img_url);
+                } catch (Exception e) {
+                    message(e);
+                    Log.d(TAG, e.toString());
+                    hide_progress();
+                }
+            }
+        });
     }
-
-
-
 
 
     private String getFile_extension(Uri uri) {
@@ -536,11 +463,10 @@ public class Reg extends AppCompatActivity {
     }
 
 
+    private void send_data_to_s3(String p1, String p2, String p3, String url) throws URISyntaxException {
 
-    private  void send_data_to_s3(String p1,String p2, String p3,String url) throws URISyntaxException {
 
-
-        message2("Uploading Image...");
+        new utils().message2("Uploading Image...", this);
         AWSCredentials credentials = new BasicAWSCredentials(p1, p2);
         AmazonS3 s3 = new AmazonS3Client(credentials);
         java.security.Security.setProperty("networkaddress.cache.ttl", "60");
@@ -561,41 +487,39 @@ public class Reg extends AppCompatActivity {
                 int percentDo = (int) percentDone;
 
 
-                if(percentDo == 100) {
-                    startActivity(new Intent(getApplicationContext(), Login.class).putExtra("check_view",String.valueOf(1)));
+                if (percentDo == 100) {
+                    startActivity(new Intent(getApplicationContext(), Login.class).putExtra("check_view", String.valueOf(1)));
                     button_reg.setEnabled(true);
                 }
-
 
 
             }
 
             @Override
             public void onError(int id, Exception ex) {
-                message2(ex.getLocalizedMessage());
-                Log.d(TAG,ex.getLocalizedMessage());
+                message(ex);
+                Log.d(TAG, ex.getLocalizedMessage());
                 hide_progress();
+                button_reg.setEnabled(true);
+
 
             }
 
         });
 
 
-
     }
 
-    //-----------------------------------------------End of Location Query------------------------------------//
+    //-----------------------------------------------End S3 Query------------------------------------//
 
 
-
-
-
-
-
+    private void message(Exception ex) {
+        new utils().message2(ex.getLocalizedMessage(), this);
+    }
 
 
     private void drop_down_populate() {
-        list =new ArrayList<>();
+        list = new ArrayList<>();
         list.add("Vendor Category");
         list.add("Rice (Jellof)");
         list.add("Rice (Stew)");
@@ -610,75 +534,36 @@ public class Reg extends AppCompatActivity {
     }
 
 
-
     private boolean verify() {
         if (editText1.getText().toString().isEmpty()) {
-            check_edit_text(editText1, "Pls fill out field");
+            new utils().check_edit_text(editText1, "Pls fill out field");
             return false;
-        }
-        else
-        if (editText2.getText().toString().isEmpty()) {
-            check_edit_text(editText2, "Pls fill out field");
+        } else if (editText2.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText2, "Pls fill out field");
             return false;
-        }
-        else
-        if (editText3.getText().toString().isEmpty()) {
-            check_edit_text(editText3, "Pls fill out field");
+        } else if (editText3.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText3, "Pls fill out field");
             return false;
-        }
-        else
-        if (editText4.getText().toString().isEmpty()) {
-            check_edit_text(editText4, "Pls fill out field");
+        } else if (editText4.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText4, "Pls fill out field");
             return false;
-        }
-        else
-        if (editText5.getText().toString().isEmpty()) {
-            check_edit_text(editText5, "Pls fill out field");
+        } else if (editText5.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText5, "Pls fill out field");
             return false;
-        }
-        else
-        if(!doStringsMatch(editText4.getText().toString(),editText5.getText().toString())) {
-            message2("Password does not match");
+        } else if (!new utils().doStringsMatch(editText4.getText().toString(), editText5.getText().toString())) {
+            new utils().message2("Password does not match", this);
             return false;
-        }
-        else
-        if(string.equals("Vendor Category")) {
-            message2("Pls Indicate vendor type.");
-            z=1;
-            return  false;
-        }
-        else
+        } else if (string.equals("Vendor Category")) {
+            new utils().message2("Pls Indicate vendor type.", this);
+            z = 1;
+            return false;
+        } else
             return true;
     }
 
 
-
-
-
-
-    private  void hide_bar(){
+    private void hide_bar() {
         mprogressBar.setVisibility(View.INVISIBLE);
-    }
-
-    public static boolean doStringsMatch(String s1, String s2){
-        return s1.equals(s2);
-    }
-
-
-
-
-    private void message2(String s) {
-        View parentLayout = findViewById(android.R.id.content);
-        Snackbar.make(parentLayout, s, Snackbar.LENGTH_SHORT).show();
-
-    }
-
-
-    public void check_edit_text(EditText edit, String string) {
-        if (edit.getText().toString().isEmpty()) {
-            edit.setError(string);
-            edit.requestFocus();
-        }
     }
 
 
@@ -690,5 +575,6 @@ public class Reg extends AppCompatActivity {
         mprogressBar.setVisibility(View.INVISIBLE);
     }
 
-    public void space(View view) { }
+    public void space(View view) {
+    }
 }

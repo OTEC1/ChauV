@@ -38,13 +38,14 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Objects;
 
+import static com.example.chauvendor.constant.Constants.*;
+
 public class LocationService extends Service {
 
 
     private static final String TAG = "LocationSerivces";
     private FusedLocationProviderClient mfusedLocationProviderClient;
-    private final static long UPDATE_INTERVAL = 5 * 1000;
-    private final static long FAST_INTERVAL = 3000;
+
 
     @Nullable
     @Override

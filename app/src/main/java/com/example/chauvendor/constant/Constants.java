@@ -10,5 +10,17 @@ public class Constants {
     public static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 300;
     public static int PICK_IMAGE =2000;
     public static int STOP_SERVICE =0;
+    public final static long UPDATE_INTERVAL = 3 * 1000;
+    public final static long FAST_INTERVAL = 500;
+    public static boolean GREEN_LIGHT = false;
+
+
     public static String IMG_URL = "https://chau.s3.eu-west-3.amazonaws.com/";
+    public  static  String ADMIN_CHANNEL_ID="admin_channel";
+    public  static CharSequence CHANNEL_NAME = "Paid Orders Channel";
+    public static String REQUEST_KEY;
+    public  static String NOTIFICATION_TITLE  = "Chauvendor";
+
+
+
 }

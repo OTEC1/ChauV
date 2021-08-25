@@ -7,25 +7,28 @@ public class User implements Parcelable {
 
     private String email, user_id, username,
              name,phone,member_T,app_user,
-            img_url;
+             img_url,token;
 
 
     private  int fair,good,bad;
 
 
 
-    public User() {
+   public User(){
 
     }
 
-    protected User(Parcel in) {
+
+    public User(Parcel in) {
         email = in.readString();
         user_id = in.readString();
         username = in.readString();
         img_url =in.readString();
+        token =in.readString();
         good =in.readInt();
         fair =in.readInt();
         bad =in.readInt();
+
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -78,6 +81,31 @@ public class User implements Parcelable {
     }
 
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", user_id='" + user_id + '\'' +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", member_T='" + member_T + '\'' +
+                ", app_user='" + app_user + '\'' +
+                ", img_url='" + img_url + '\'' +
+                ", token='" + token + '\'' +
+                ", fair=" + fair +
+                ", good=" + good +
+                ", bad=" + bad +
+                '}';
+    }
 
     public String getPhone() {
         return phone;
@@ -135,22 +163,8 @@ public class User implements Parcelable {
         this.bad = bad;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", member_T='" + member_T + '\'' +
-                ", app_user='" + app_user + '\'' +
-                ", img_url='" + img_url + '\'' +
-                ", good='" + good + '\'' +
-                ", fair='" + fair + '\'' +
-                ", bad='" + bad + '\'' +
-                '}';
-    }
+
+
 
     @Override
     public int describeContents() {
@@ -164,9 +178,11 @@ public class User implements Parcelable {
         dest.writeString(username);
         dest.writeString(app_user);
         dest.writeString(img_url);
+        dest.writeString(token);
         dest.writeInt(good);
         dest.writeInt(fair);
         dest.writeInt(bad);
+
     }
 }
 

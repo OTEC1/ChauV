@@ -1,4 +1,4 @@
- package com.example.chauvendor.UI;
+package com.example.chauvendor.UI;
 
 import android.content.Context;
 import android.content.Intent;
@@ -67,20 +67,20 @@ import static android.app.Activity.RESULT_OK;
 import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 
 
- public class account extends Fragment {
+public class account extends Fragment {
 
     private Button pic_select, upload1, view_review;
     private EditText foodprice, foodname;
     private Uri imgUri;
     private ImageView image_view;
     private CircleImageView vendor_img;
-    private TextView shopname,progress;
+    private TextView shopname, progress;
     private Spinner spinner;
-    private ProgressBar progressBar,progressBar1,progressBar_img;
+    private ProgressBar progressBar, progressBar1, progressBar_img;
 
     private boolean confirm = false, verified = false;
-    private  String string="Indicate", p1,p2,p3,TAG ="accountFragment";
-    private  static  String responsed="";
+    private String string = "Indicate", p1, p2, p3, TAG = "accountFragment";
+    private static String responsed = "";
 
 
     private FirebaseFirestore mfirebaseFirestore;
@@ -89,18 +89,18 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     private ArrayAdapter adapter1;
 
 
-    private void start_pref() { sp = getActivity().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE); }
+    private void start_pref() {
+        sp = getActivity().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
+    }
 
 
     @Override
     public void onResume() {
         super.onResume();
-        mfirebaseFirestore =FirebaseFirestore.getInstance();
-        if(responsed.trim().length()<=0)
+        mfirebaseFirestore = FirebaseFirestore.getInstance();
+        if (responsed.trim().length() <= 0)
             responsed = quick_commission_call();
     }
-
-
 
 
     @Override
@@ -122,8 +122,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
         progress = (TextView) view.findViewById(R.id.progress);
 
 
-
-        if(FirebaseAuth.getInstance().getUid() != null)
+        if (FirebaseAuth.getInstance().getUid() != null)
             current_vendor();
 
         start_pref();
@@ -138,11 +137,8 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
         });
 
 
-
-
-        if(responsed.trim().length()<=0)
+        if (responsed.trim().length() <= 0)
             responsed = quick_commission_call();
-
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -167,39 +163,30 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
                 if (sp.getString("user_email", "").trim().length() <= 0)
                     message2("Pls Sign in.");
 
-                else
-                if(string.equals("Indicate"))
+                else if (string.equals("Indicate"))
                     message2("Pls indicate section to upload");
-                else
-                if(responsed.trim().length()<=0)
+                else if (responsed.trim().length() <= 0)
                     responsed = quick_commission_call();
-                else
-                {
-                    if (confirm && foodprice.getText().toString().length()>0 && foodname.getText().toString().length()>0 && verified && responsed!=null) {
+                else {
+                    if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0 && verified && responsed != null) {
                         show_progress();
                         String pic_key = getFile_extension(imgUri);
-                        if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp") ) {
+                        if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
                             String in = generate_name().concat(".png");
 
-                            send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in,responsed);
+                            send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in, responsed);
                             credentials(in);
 
-                        }
-                        else
-                        if(!verified)
+                        } else if (!verified)
                             message2("Pls Reload Page ! ");
                         else {
                             message2("Pls select an image");
                             hide_progress();
                         }
-                    }
-                    else
-                    if(foodprice.getText().toString().length()<=0 | foodname.getText().toString().length()<=0) {
+                    } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
                         hide_progress();
                         message2("Pls fill out both fields");
-                    }
-                    else
-                    if(!confirm) {
+                    } else if (!confirm) {
                         hide_progress();
                         message2("Pls select Food Picture");
                     }
@@ -211,71 +198,73 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     }
 
 
-
     private void current_vendor() {
-        DocumentReference user =mfirebaseFirestore.collection("Vendor Registration").document(FirebaseAuth.getInstance().getUid());
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    shopname.setText(String.valueOf(task.getResult().get("name")));
-                    progressBar1.setVisibility(View.GONE);
-                    new utils().img_load(getActivity(),String.valueOf(task.getResult().get("img_url")),progressBar_img,vendor_img);
+        if (new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_NAME), null) != null) {
+            shopname.setText(new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_NAME), ""));
+            new utils().img_load(getActivity(), new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_IMG_URL), ""), progressBar_img, vendor_img);
+            progressBar1.setVisibility(View.GONE);
+        } else {
+            DocumentReference user = mfirebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid());
+            user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        shopname.setText(String.valueOf(task.getResult().get("name")));
+                        progressBar1.setVisibility(View.GONE);
+                        new utils().img_load(getActivity(), String.valueOf(task.getResult().get("img_url")), progressBar_img, vendor_img);
+                        I(getString(R.string.VENDOR_NAME), task.getResult().get("name").toString());
+                        I(getString(R.string.VENDOR_IMG_URL), task.getResult().get("img_url").toString());
+                    }
                 }
-            }});
-
-
+            });
+        }
     }
 
 
 
+    private void I(String a, String s) {
+        new utils().instantiate_shared_preferences(sp, requireContext()).edit().putString(a, s).apply();
+    }
 
 
+    private String quick_commission_call() {
 
-
-
-
-
-
-     private String quick_commission_call() {
-
-        DocumentReference user =mfirebaseFirestore.collection("west").document("token");
+        DocumentReference user = mfirebaseFirestore.collection("west").document("token");
         user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    responsed=String.valueOf(task.getResult().get("tokens"));
+                    responsed = String.valueOf(task.getResult().get("tokens"));
                     verified = true;
-                }
-                else
+                } else
                     Log.d(TAG, String.valueOf(task.getException()));
-            }});
+            }
+        });
 
         return responsed;
 
     }
 
 
-
     //Step 5
     private void credentials(final String m) {
 
-        DocumentReference user =mfirebaseFirestore.collection("east").document("lab");
+        DocumentReference user = mfirebaseFirestore.collection("east").document("lab");
         user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
+                if (task.isSuccessful()) {
                     p1 = task.getResult().getString("p1");
                     p2 = task.getResult().getString("p2");
                     p3 = task.getResult().getString("p3");
                     //System.out.println(id + " " + p1 + "  " + p2 + "  " + p3);
 
                     try {
-                        if(p1.length()>0 && p2.length()>0 && p3.length()>0)
-                            send_data_to_s3(imgUri,m,p1,p2,p3);
+                        if (p1.length() > 0 && p2.length() > 0 && p3.length() > 0)
+                            send_data_to_s3(imgUri, m, p1, p2, p3);
                     } catch (URISyntaxException e) {
                         message2(e.toString());
-                        Log.d(TAG,e.toString());
+                        Log.d(TAG, e.toString());
                         hide_progress();
                     }
 
@@ -285,23 +274,20 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     }
 
 
+    private void send_data_to_firebase(String price, String toString1, String pic_key, String response) {
 
-
-    private void send_data_to_firebase(String price, String toString1, String pic_key,String response) {
-
-        int  res= Integer.parseInt(response)+Integer.parseInt(price);
+        int res = Integer.parseInt(response) + Integer.parseInt(price);
         //message2("Final"+res+"  "+response);
         DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
-        Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key,string,FirebaseAuth.getInstance().getUid(),0,0, reference.getId(),0);
+        Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key, string, FirebaseAuth.getInstance().getUid(), 0, 0, reference.getId(), 0);
         reference.set(uploads).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     message2("Uploaded  successfully.. Pls wait image uploading..");
-                    verified= false;
+                    verified = false;
                     responsed = "";
-                }
-                else
+                } else
                     message2("Error " + task.getException());
             }
         });
@@ -330,13 +316,14 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
                 float percentDone = ((float) bytesCurrent / (float) bytesTotal) * 100;
                 int percentDo = (int) percentDone;
 
-                progress.setText("Uploading... "+percentDo);
-                if(percentDo == 100) {
+                progress.setText("Uploading... " + percentDo);
+                if (percentDo == 100) {
                     progress.setText("Uploaded");
                     hide_progress();
+                    foodname.setText("");
+                    foodprice.setText("");
+                    image_view.setImageResource(R.drawable.plain);
                 }
-
-
 
 
             }
@@ -344,16 +331,13 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
             @Override
             public void onError(int id, Exception ex) {
                 message2(ex.getLocalizedMessage());
-                Log.d(TAG,ex.getLocalizedMessage());
+                Log.d(TAG, ex.getLocalizedMessage());
                 hide_progress();
 
             }
 
         });
     }
-
-
-
 
 
     //Media selector  Custom ui
@@ -394,8 +378,8 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     }
 
 
-    private void populate_drop_down(){
-        arrayList =new ArrayList<>();
+    private void populate_drop_down() {
+        arrayList = new ArrayList<>();
         arrayList.add("Indicate");
         arrayList.add("Yam");
         arrayList.add("Rice");
@@ -422,9 +406,6 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
     private void hide_progress() {
         progressBar.setVisibility(View.INVISIBLE);
     }
-
-
-
 
 
     private void message2(String s) {
