@@ -136,7 +136,8 @@ public class Reg extends AppCompatActivity {
                 message_reg("Device not Registered Pls Relaunch or Reinstall App.");
             else {
                 if (checkMapServices()) {
-                    if (mLocationPermissionGranted) { z = 0;
+                    if (mLocationPermissionGranted) {
+                        z = 0;
                         if (verify() && confirm && TOKEN_OK()) {
                             String pic_key = getFile_extension(imgUri);
                             if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
@@ -148,8 +149,8 @@ public class Reg extends AppCompatActivity {
                             message_reg("Pls Reinstall App");
                         else if (!confirm && z != 1)
                             message_reg("Pls select an image File");
-                    }else
-                     message_reg("Pls Reinstall and Grant all Permission");
+                    } else
+                        message_reg("Pls Reinstall and Grant all Permission");
                 } else
                     getLocationPermission();
             }
@@ -521,11 +522,10 @@ public class Reg extends AppCompatActivity {
     private void drop_down_populate() {
         list = new ArrayList<>();
         list.add("Vendor Category");
-        list.add("Rice (Jellof)");
-        list.add("Rice (Stew)");
-        list.add("Swallow");
-        list.add("Noodles");
-        list.add("Pap");
+        list.add("Swallow Vendor");
+        list.add("Noodles Vendor");
+        list.add("Rice Vendor");
+        list.add("Pap Vendor");
         list.add("All");
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         arrayAdapter.setDropDownViewResource(R.layout.text_pad);

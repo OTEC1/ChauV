@@ -1,16 +1,16 @@
 package com.example.chauvendor.UI;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -22,11 +22,6 @@ import android.widget.TextView;
 
 import com.example.chauvendor.R;
 import com.example.chauvendor.util.utils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -86,6 +81,7 @@ public class Login extends AppCompatActivity {
 
 
         button.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 if (check())
@@ -96,8 +92,8 @@ public class Login extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void signIn() {
-        CACHE_FIRST_SIGNED_IN_USER();
         progressBar.setVisibility(View.VISIBLE);
         FirebaseAuth.getInstance().signInWithEmailAndPassword(editText.getText().toString(), editText1.getText().toString())
                 .addOnCompleteListener(task -> {
@@ -113,12 +109,6 @@ public class Login extends AppCompatActivity {
 
     }
 
-    private void CACHE_FIRST_SIGNED_IN_USER() {
-        if (new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), null) == null)
-            new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.LAST_SIGN_IN_USER), editText.getText().toString()).apply();
-        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.VENDOR_NAME), null).apply();
-    }
-
 
     private void message(String a) {
         new utils().message(a, this);
@@ -126,27 +116,45 @@ public class Login extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void QUICK_DOC_REF() {
         Map<String, Object> i = new HashMap<>();
         i.put("token", new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
-        DocumentReference documentReference = firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
-        documentReference.update(i).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                FINAL_DOC_REF();
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                progressBar.setVisibility(View.INVISIBLE);
-            } else
-                new utils().message("Account not Registered", this);
+        RE_USE(0, i, Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
 
-        });
-
-        System.out.println(new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), ""));
 
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void FINAL_DOC_REF() {
+        if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils()
+                .instantiate_shared_preferences(sp, getApplicationContext())
+                .getString(getString(R.string.LAST_SIGN_IN_USER), ""))) {
+            Map<String, Object> i = new HashMap<>();
+            i.put("token", "");
+            RE_USE(1, i, new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), ""));
+        }
+    }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void RE_USE(int i, Map<String, Object> s, String doc_id) {
+        DocumentReference documentReference = firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id);
+        documentReference.update(s).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (i != 1) {
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    progressBar.setVisibility(View.INVISIBLE);
+                    FINAL_DOC_REF();
+                }
+            } else {
+                new utils().message("Account not Registered", this);
+                progressBar.setVisibility(View.GONE);
+                System.out.println(task.getException());
+            }
+
+        });
     }
 
 

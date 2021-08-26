@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             bundle = getIntent().getExtras();
             new utils().message1(new utils().Stringnify(bundle.get("ID")), getApplicationContext());
-            bundle.putString("ID",bundle.get("ID").toString());
+            bundle.putString("ID", bundle.get("ID").toString());
         }
     }
 
@@ -87,36 +87,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
         NOTIFICATION_LISTER();
-        decide = new utils().bottom_nav(bottomNav,this,bundle);
+        decide = new utils().bottom_nav(bottomNav, this, bundle);
         policy();
         check();
         if (FirebaseAuth.getInstance().getUid() != null) {
             mfirestore = FirebaseFirestore.getInstance();
-            if(getIntent().getExtras()!=null)
-                new utils().openFragment(new notification(),this,bundle);
+            if (getIntent().getExtras() != null)
+                new utils().openFragment(new notification(), this, bundle);
             else
-               new utils().openFragment(new home(),this,bundle);
+                new utils().openFragment(new home(), this, bundle);
         }
 
     }
 
 
-
     private void NOTIFICATION_LISTER() {
-        if(!Pushy.isRegistered(getApplicationContext()))
+        if (!Pushy.isRegistered(getApplicationContext()))
             new RegisterUser(this).execute();
         Pushy.listen(this);
     }
-
-
-
-
-
-
-
-
-
-
 
 
     //----------------------------------------------Permission for   file sharing ---------------------------------------------//
@@ -180,9 +169,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
     //----------------------------------------------End of file sharing ---------------------------------------------//
+
+
+
+
+
+
+
 
 
 
@@ -235,19 +229,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signout(MenuItem item) {
-        if (FirebaseAuth.getInstance().getUid() != null) {
-            new utils().message2(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail() + " Signed Out", this);
-            FirebaseAuth.getInstance().signOut();
-        } else
+        if (FirebaseAuth.getInstance().getUid() != null)
+            UPDATE_DEVICE();
+            else
             new utils().message2("Already Signed Out", this);
 
     }
 
 
+    private void UPDATE_DEVICE() {
+        new utils().message2(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail() + " Signed Out", this);
+        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.LAST_SIGN_IN_USER), FirebaseAuth.getInstance().getUid()).apply();
+        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.VENDOR_NAME), null).apply();
+        FirebaseAuth.getInstance().signOut();
+    }
+
+
     public void search(MenuItem item) {
         decide = false;
-        bundle.putString("ID","S");
-       new utils().openFragment(new Search(),this,bundle);
+        bundle= new Bundle();
+        bundle.putString("ID", "S");
+        new utils().openFragment(new Search(), this, bundle);
     }
 
     public void space(View view) {

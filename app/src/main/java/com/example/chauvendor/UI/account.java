@@ -159,15 +159,19 @@ public class account extends Fragment {
             public void onClick(View view) {
 
 
-                Objects.requireNonNull(sp.getString("user_email", "")).trim();
-                if (sp.getString("user_email", "").trim().length() <= 0)
+                if (FirebaseAuth.getInstance().getUid() == null)
                     message2("Pls Sign in.");
-
                 else if (string.equals("Indicate"))
                     message2("Pls indicate section to upload");
                 else if (responsed.trim().length() <= 0)
                     responsed = quick_commission_call();
-                else {
+                else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
+                    hide_progress();
+                    message2("Pls fill out both fields");
+                } else if (!confirm) {
+                    hide_progress();
+                    message2("Pls select Food Picture");
+                } else {
                     if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0 && verified && responsed != null) {
                         show_progress();
                         String pic_key = getFile_extension(imgUri);
@@ -183,12 +187,6 @@ public class account extends Fragment {
                             message2("Pls select an image");
                             hide_progress();
                         }
-                    } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
-                        hide_progress();
-                        message2("Pls fill out both fields");
-                    } else if (!confirm) {
-                        hide_progress();
-                        message2("Pls select Food Picture");
                     }
                 }
             }
@@ -219,7 +217,6 @@ public class account extends Fragment {
             });
         }
     }
-
 
 
     private void I(String a, String s) {
