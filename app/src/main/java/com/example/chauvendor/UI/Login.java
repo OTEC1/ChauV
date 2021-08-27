@@ -130,7 +130,10 @@ public class Login extends AppCompatActivity {
     private void FINAL_DOC_REF() {
         if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils()
                 .instantiate_shared_preferences(sp, getApplicationContext())
-                .getString(getString(R.string.LAST_SIGN_IN_USER), ""))) {
+                .getString(getString(R.string.LAST_SIGN_IN_USER), ""))
+                &&  new utils()
+                .instantiate_shared_preferences(sp, getApplicationContext())
+                .getString(getString(R.string.LAST_SIGN_IN_USER), "").trim().length()>0) {
             Map<String, Object> i = new HashMap<>();
             i.put("token", "");
             RE_USE(1, i, new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), ""));

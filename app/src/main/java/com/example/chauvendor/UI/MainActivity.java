@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -32,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.chauvendor.R;
+import com.example.chauvendor.Running_Service.Keep_alive;
 import com.example.chauvendor.Running_Service.RegisterUser;
 import com.example.chauvendor.model.UserLocation;
 import com.example.chauvendor.util.utils;
@@ -58,7 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FirebaseFirestore mfirestore;
     private UserLocation muserLocation;
+    private  Keep_alive keep_alive;
     private Bundle bundle;
+    private Intent intent;
 
 
     private String TAG = "MainActivity";
@@ -101,11 +105,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
+
+
+
+
     private void NOTIFICATION_LISTER() {
         if (!Pushy.isRegistered(getApplicationContext()))
             new RegisterUser(this).execute();
         Pushy.listen(this);
+        NOTIFICATION_LISTER_1();
     }
+
+
+    private void NOTIFICATION_LISTER_1() {
+
+        keep_alive = new Keep_alive();
+        intent = new Intent(this, keep_alive.getClass());
+        if (!isServicerunning(keep_alive.getClass()))
+            startService(intent);
+
+        if (!Pushy.isRegistered(getApplicationContext()))
+            new RegisterUser(this).execute();
+        Pushy.listen(this);
+    }
+
+
+    private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (aClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.d(TAG, " Service Already Running");
+                return true;
+            }
+            Log.d(TAG, " Service Not Running");
+        }
+        return false;
+    }
+
 
 
     //----------------------------------------------Permission for   file sharing ---------------------------------------------//

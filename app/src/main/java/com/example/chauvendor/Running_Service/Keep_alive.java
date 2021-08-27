@@ -32,24 +32,26 @@ public class Keep_alive extends Service {
             Log.d(TAG,"Loop service Started ! ");
         }
         else
-            startForeground(1,new Notification());
+            startForeground(10,new Notification());
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void start_Custom_For_ground() {
-        NotificationChannel chau = new NotificationChannel(ADMIN_CHANNEL_ID,CHANNEL_NAME, NotificationManager.IMPORTANCE_NONE);
+        NotificationChannel chau = new NotificationChannel(ADMIN_CHANNEL_ID,CHANNEL_NAME, NotificationManager.IMPORTANCE_MIN);
         chau.setLightColor(Color.BLUE);
         chau.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        chau.setDescription("Chauvendor channel");
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.createNotificationChannel(chau);
         NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this, ADMIN_CHANNEL_ID);
+
         Notification notification= noBuilder.setOngoing(true)
                 .setContentTitle("Chauvendor is running")
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .build();
-        startForeground(2,notification);
+        startForeground(10,notification);
     }
 
     @Override
@@ -64,13 +66,14 @@ public class Keep_alive extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         stopTimer();
         Intent intent = new Intent();
         intent.setAction("restartservice");
         intent.setClass(this,PushReceiver.class);
         intent.putExtra("O","1");
         this.sendBroadcast(intent);
+        super.onDestroy();
+
     }
 
 
@@ -85,9 +88,11 @@ public class Keep_alive extends Service {
             @Override
             public void run() {
                 count++;
+                Log.d(TAG, String.valueOf(count));
             }
         };
         timer.schedule(timerTask,1000,1000);
+
     }
 
 
