@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.chauvendor.Adapter.Notification_children_view;
 import com.example.chauvendor.R;
@@ -31,6 +32,7 @@ public class Inner_notification extends AppCompatActivity {
     private Notification_children_view adapter;
     private ProgressBar progressBar;
     private BottomNavigationView bottomNavigationView;
+    private TextView totals;
 
 
     private List<String> list = new ArrayList<>();
@@ -39,6 +41,7 @@ public class Inner_notification extends AppCompatActivity {
 
     private String TAG = "notification_track";
     private int i;
+    private long send_in, work_on;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class Inner_notification extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
+        totals = (TextView) findViewById(R.id.totals);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, new Bundle());
 
@@ -62,8 +66,10 @@ public class Inner_notification extends AppCompatActivity {
             collectionReference.get().addOnCompleteListener(n -> {
                 if (n.isSuccessful()) {
                     for (QueryDocumentSnapshot x : n.getResult()) {
-                        if (new utils().TIME_FORMAT(x.get("TimeStamp").toString()).equals(getIntent().getStringExtra("data_key")))
+                        if (x.get("Cart_tracker").toString().equals(getIntent().getStringExtra("data_key"))) {
                             list2.add(new utils().map(x, 1, ""));
+                            new utils().sum_quantity(x, getApplicationContext(), totals, work_on, send_in);
+                        }
                         if (i == list.size()) {
                             set_layout(list2);
                             Log.d(TAG, String.valueOf(list2));

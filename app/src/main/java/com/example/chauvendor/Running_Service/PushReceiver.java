@@ -32,12 +32,13 @@ public class PushReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         Intent intent1 = new Intent(context, Main_notification.class);
         String  notificationText = intent.getStringExtra("user");
         int notificationID = new Random().nextInt(3000);
         intent1.putExtra("ID", intent.getStringExtra("ID"));
         intent1.putExtra("docs", intent.getStringExtra("docs"));
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent  pendingIntent = PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notify)

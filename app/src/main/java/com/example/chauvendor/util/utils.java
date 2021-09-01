@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -178,6 +179,7 @@ public class utils {
             pack.put("img_url", result.get("img_url"));
             pack.put("item_id", result.get("item_id"));
             pack.put("quantity", result.get("quantity"));
+            pack.put("cart_tracker", result.get("Cart_tracker"));
         } else if (r == 2) {
             pack.put("docs_id", result.getId());
             pack.put("Status", result.get("Status"));
@@ -188,6 +190,8 @@ public class utils {
             pack.put("users", result.get("users"));
             pack.put("name", result.get("name"));
             pack.put("current_doc", a);
+            pack.put("cart_tracker", result.get("Cart_tracker"));
+
         }
         return pack;
     }
@@ -285,6 +289,23 @@ public class utils {
         collection.putString(tag, area);
         collection.apply();
 
+    }
+
+
+
+
+    public  void sum_quantity(QueryDocumentSnapshot o,Context view,TextView total,long work_on,long send_in){
+        if (total.getText().toString().trim().length() > 0)
+            work_on = Integer.parseInt(clean(total.getText().toString(), view.getString(R.string.NAIRA)).trim());
+
+        send_in = Integer.parseInt(String.valueOf(clean(Objects.requireNonNull(o.get("quantity"))
+                .toString(), ".0"))) * Integer.parseInt(String.valueOf(new utils().clean(Objects.requireNonNull(o.get("food_price")).toString(), ".0")));
+        total.setText(view.getString(R.string.NAIRA).concat(String.valueOf(work_on + send_in)));
+
+    }
+
+    private String clean(String toString, String string) {
+        return toString.replace(string,"");
     }
 
 

@@ -41,12 +41,12 @@ public class Notification_children_view extends RecyclerView.Adapter<Notificatio
     public void onBindViewHolder(@NonNull @NotNull Notification_children_view.MyHolder holder, int position) {
 
         new utils().img_load(holder.poster_value.getContext(),new utils().Stringnify(items.get(position).get("img_url")), holder.progressBar, holder.poster_value);
-        holder.ntime_stamp.setText(new utils().Stringnify(items.get(position).get("Timestamp")));
+        holder.ntime_stamp.setText("Date: "+new utils().Stringnify(items.get(position).get("Timestamp")));
         holder.nvendor_id.setText(new utils().Stringnify(items.get(position).get("doc_id")));
-        holder.nfood_name.setText(new utils().Stringnify(items.get(position).get("food_name")));
-        holder.nfood_price.setText(new utils().Stringnify(items.get(position).get("food_price")));
+        holder.nfood_name.setText("Food: "+new utils().Stringnify(items.get(position).get("food_name")));
+        holder.nfood_price.setText("Price: "+new utils().Stringnify(items.get(position).get("food_price")));
         holder.nitem_id.setText(new utils().Stringnify(items.get(position).get("item_id")));
-        holder.nfood_quantity.setText(new utils().Stringnify(items.get(position).get("quantity")));
+        holder.nfood_quantity.setText("Quantity: "+new utils().Stringnify(items.get(position).get("quantity")));
 
     }
 
