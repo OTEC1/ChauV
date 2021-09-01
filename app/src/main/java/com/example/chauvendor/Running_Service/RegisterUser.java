@@ -30,9 +30,7 @@ public class RegisterUser extends AsyncTask<Void,Void,Object> {
         try {
             String deviceToken = Pushy.register(activity.getApplicationContext());
             Log.d(TAG,"Pushy Device token: "+deviceToken);
-
             new URL("https://com.example.chauvendor/regsiter/device?token="+deviceToken).openConnection();
-
             return  deviceToken;
         } catch (Exception e) {
 

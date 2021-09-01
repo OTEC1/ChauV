@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/shop_name"
                         android:layout_margin="10dp"
-                        android:textColor="#fff"
+                        android:textColor="#62FF00"
                         android:textStyle="bold" />
 
                     <de.hdodenhof.circleimageview.CircleImageView

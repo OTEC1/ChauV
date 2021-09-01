@@ -12,6 +12,7 @@ public class Constants {
     public static int STOP_SERVICE =0;
     public final static long UPDATE_INTERVAL = 3 * 1000;
     public final static long FAST_INTERVAL = 500;
+    public  static Object CHARGES;
 
 
 

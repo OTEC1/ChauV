@@ -58,6 +58,13 @@ dependencies {
     // Firebase Core
     implementation 'com.google.firebase:firebase-core:16.0.4'
 
+    // FirebaseUI for Firebase Realtime Database
+    implementation 'com.firebaseui:firebase-ui-database:7.2.0'
+
+    // FirebaseUI for Cloud Firestore
+    implementation 'com.firebaseui:firebase-ui-firestore:7.2.0'
+
+
     //messaging
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
     implementation 'com.google.firebase:firebase-iid:21.1.0'
@@ -95,8 +102,6 @@ dependencies {
     implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.6.+'
-
-
 
 
     //retrofit

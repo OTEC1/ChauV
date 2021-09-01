@@ -4,10 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECEFF6"
-    android:onClick="space"
-    tools:context=".UI.MainActivity">
-
+    tools:context=".UI.Main_notification">
 
 
     <LinearLayout
@@ -32,24 +29,15 @@
         </RelativeLayout>
 
 
-
-        <RelativeLayout
-            android:id="@+id/sections"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="83">
+            android:layout_height="0sp"
+            android:layout_weight="82"
+            android:background="@color/White" />
 
 
-            <FrameLayout
-                android:id="@+id/frameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
 
-
-        </RelativeLayout>
 
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -60,7 +48,17 @@
             android:background="#fff"
             app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_nav_menu" />
+
+
     </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/progressBar6"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
 
 </RelativeLayout>

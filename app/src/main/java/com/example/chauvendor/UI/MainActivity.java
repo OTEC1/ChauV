@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.example.chauvendor.R;
 import com.example.chauvendor.Running_Service.Keep_alive;
 import com.example.chauvendor.Running_Service.RegisterUser;
+import com.example.chauvendor.constant.Constants;
 import com.example.chauvendor.model.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.example.chauvendor.widget.ViewHeightAnimation;
@@ -43,11 +44,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import me.pushy.sdk.Pushy;
@@ -60,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private FirebaseFirestore mfirestore;
     private UserLocation muserLocation;
-    private  Keep_alive keep_alive;
-    private Bundle bundle;
+    private Keep_alive keep_alive;
+    private Bundle bundle = new Bundle();
     private Intent intent;
 
 
@@ -72,15 +76,17 @@ public class MainActivity extends AppCompatActivity {
     private final boolean mLocationPermissionGranted = false, decision = false;
 
 
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
         decide = true;
-        if (getIntent().getExtras() != null) {
-            bundle = getIntent().getExtras();
-            new utils().message1(new utils().Stringnify(bundle.get("ID")), getApplicationContext());
-            bundle.putString("ID", bundle.get("ID").toString());
-        }
+        new utils().openFragment(new home(), this, bundle);
+        if (CHARGES == null)
+           new  utils().quick_commission_call(mfirestore,TAG);
+        new utils().api_call_to_cache(getApplicationContext(), new ArrayList<>(),getString(R.string.CACHE_LIST_OF_VENDORS),1);
     }
 
 
@@ -91,24 +97,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
         NOTIFICATION_LISTER();
+        bundle.putString("UI_to_display", "2");
         decide = new utils().bottom_nav(bottomNav, this, bundle);
         policy();
         check();
-        if (FirebaseAuth.getInstance().getUid() != null) {
-            mfirestore = FirebaseFirestore.getInstance();
-            if (getIntent().getExtras() != null)
-                new utils().openFragment(new notification(), this, bundle);
-            else
+        mfirestore = FirebaseFirestore.getInstance();
+        new utils().quick_commission_call(mfirestore,TAG);
+        if (FirebaseAuth.getInstance().getUid() != null)
                 new utils().openFragment(new home(), this, bundle);
-        }
+
 
     }
-
-
-
-
-
-
 
 
     private void NOTIFICATION_LISTER() {
@@ -144,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
-
 
 
     //----------------------------------------------Permission for   file sharing ---------------------------------------------//
@@ -211,20 +209,6 @@ public class MainActivity extends AppCompatActivity {
     //----------------------------------------------End of file sharing ---------------------------------------------//
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //----------------------------------------------onBackPressed ---------------------------------------------//
     @Override
     public void onBackPressed() {
@@ -270,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
     public void signout(MenuItem item) {
         if (FirebaseAuth.getInstance().getUid() != null)
             UPDATE_DEVICE();
-            else
+        else
             new utils().message2("Already Signed Out", this);
 
     }
@@ -286,10 +270,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void search(MenuItem item) {
         decide = false;
-        bundle= new Bundle();
+        bundle = new Bundle();
         bundle.putString("ID", "S");
         new utils().openFragment(new Search(), this, bundle);
     }
+
+
+
 
     public void space(View view) {
     }

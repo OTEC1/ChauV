@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/chau_vendor"
+    tools:context=".UI.Vendor_account">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100">
+
+        <RelativeLayout
+            android:id="@+id/fragments"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="10" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="90">
+
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ProgressBar
+                            android:id="@+id/progressBar3"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:visibility="invisible" />
+
+
+                        <RelativeLayout
+                            android:id="@+id/top_section_up"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="100dp">
+
+
+                            <RelativeLayout
+                                android:id="@+id/top_section"
+                                android:layout_width="match_parent"
+                                android:layout_height="100dp">
+
+
+                                <TextView
+                                    android:id="@+id/shop_name"
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="10dp"
+                                    android:textColor="#fff"
+                                    android:textSize="30sp"
+                                    android:textStyle="bold" />
+
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar4"
+                                    style="?android:attr/progressBarStyle"
+                                    android:layout_width="50dp"
+                                    android:layout_height="45dp"
+                                    android:layout_marginStart="50dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_marginTop="10dp" />
+
+
+                                <TextView
+                                    android:id="@+id/progress"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/shop_name"
+                                    android:layout_margin="10dp"
+                                    android:textColor="#62FF00"
+                                    android:textStyle="bold" />
+
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/vendor_img"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_margin="10dp"
+                                    app:civ_border_color="#fff"
+                                    app:civ_border_width="2dp" />
+
+                                <ProgressBar
+                                    android:id="@+id/progressBar5"
+                                    style="?android:attr/progressBarStyle"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_alignParentRight="true"
+                                    android:layout_margin="30dp"
+                                    android:layout_marginTop="10dp" />
+
+
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:id="@+id/layer1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/top_section">
+
+
+                                <GridLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:columnCount="3"
+                                    android:rowCount="4">
+
+
+                                    <Button
+                                        android:id="@+id/view_review"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="10dp"
+                                        android:background="@android:color/transparent"
+                                        android:drawableTop="@drawable/ic_baseline_bubble_chart_24"
+                                        android:gravity="center_horizontal"
+                                        android:text="Review"
+                                        android:textAlignment="center"
+                                        android:textAllCaps="false"
+                                        android:textColor="#fff" />
+
+
+                                    <Button
+                                        android:id="@+id/pic_select"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="10dp"
+                                        android:background="@android:color/transparent"
+                                        android:drawableTop="@drawable/ic_baseline_add_a_photo_24"
+                                        android:gravity="center_horizontal"
+                                        android:text="Choose file"
+                                        android:textAlignment="center"
+                                        android:textAllCaps="false"
+                                        android:textColor="#fff" />
+
+
+                                    <Button
+                                        android:id="@+id/upload"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_margin="10dp"
+                                        android:background="@android:color/transparent"
+                                        android:drawableTop="@drawable/ic_baseline_cloud_upload_24"
+                                        android:gravity="center_horizontal"
+                                        android:text="Uploads"
+                                        android:textAlignment="center"
+                                        android:textAllCaps="false"
+                                        android:textColor="#fff" />
+
+
+                                </GridLayout>
+
+
+                            </RelativeLayout>
+
+                            <Spinner
+                                android:id="@+id/spinners"
+                                android:layout_width="300dp"
+                                android:layout_height="50dp"
+                                android:layout_below="@+id/layer1"
+                                android:layout_centerHorizontal="true"
+                                android:layout_margin="20dp"
+                                android:gravity="start"
+                                android:textAlignment="viewStart" />
+
+                            <RelativeLayout
+                                android:id="@+id/shop_uploads"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/spinners"
+                                android:layout_marginTop="0dp">
+
+
+                                <EditText
+                                    android:id="@+id/foodname"
+                                    android:layout_width="300dp"
+                                    android:layout_height="50dp"
+                                    android:layout_centerHorizontal="true"
+                                    android:background="@drawable/custom_lines"
+                                    android:hint="Food name"
+                                    android:padding="10dp"
+                                    android:textColor="#000"
+                                    android:textColorHint="#000" />
+
+
+                                <EditText
+                                    android:id="@+id/foodprice"
+                                    android:layout_width="300dp"
+                                    android:layout_height="50dp"
+                                    android:layout_below="@+id/foodname"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@drawable/custom_lines"
+                                    android:hint="Food Price"
+                                    android:inputType="number"
+                                    android:padding="10dp"
+                                    android:textColor="#000"
+                                    android:textColorHint="#000" />
+
+
+                            </RelativeLayout>
+
+
+                            <ImageView
+                                android:id="@+id/image_view"
+                                android:layout_width="180dp"
+                                android:layout_height="150dp"
+                                android:layout_below="@+id/shop_uploads"
+                                android:layout_centerHorizontal="true"
+                                android:layout_margin="15dp"
+                                android:layout_marginBottom="200dp" />
+
+
+                        </RelativeLayout>
+                    </RelativeLayout>
+                </ScrollView>
+            </FrameLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#fff"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
+
+
+</RelativeLayout>

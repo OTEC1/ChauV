@@ -9,16 +9,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.chauvendor.R;
-import com.example.chauvendor.UI.MainActivity;
+import com.example.chauvendor.UI.Main_notification;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
@@ -34,22 +32,22 @@ public class PushReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String notificationText = "";
-        if (intent.getStringExtra("user") != null)
-            notificationText = intent.getStringExtra("user");
-
-        int notificationID = new Random().nextInt(2000);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Prepare a notification with vibration, sound and lights
+        Intent intent1 = new Intent(context, Main_notification.class);
+        String  notificationText = intent.getStringExtra("user");
+        int notificationID = new Random().nextInt(3000);
+        intent1.putExtra("ID", intent.getStringExtra("ID"));
+        intent1.putExtra("docs", intent.getStringExtra("docs"));
+        PendingIntent  pendingIntent = PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setAutoCancel(true)
                 .setSmallIcon(R.drawable.notify)
                 .setContentTitle(NOTIFICATION_TITLE)
                 .setContentText(notificationText)
+                .setAutoCancel(true)
                 .setLights(Color.RED, 1000, 1000)
                 .setVibrate(new long[]{0, 400, 250, 400})
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class).putExtra("ID", (intent.getStringExtra("ID") != null) ? intent.getStringExtra("ID") : ""), PendingIntent.FLAG_ONE_SHOT));
+                .setContentIntent(pendingIntent);
 
         if (intent.getStringExtra("img_url") != null) {
             Bitmap bitmap = get_img_url(intent.getStringExtra("img_url"));

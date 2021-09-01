@@ -16,16 +16,20 @@
     <string name="Vendor_loc">Vendor Locations</string>
     <string name="vendor_uploads">Vendor Uploads</string>
     <string name="title_activity_business_details">Business_details</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
+    <string name="next">Food ready send request</string>
     <string name="previous">Previous</string>
     <string name="DEVICE_TOKEN">device_token</string>
     <string name="DEVICE_REG_TOKEN">device_reg_token</string>
     <string name="VENDOR_NAME">vendor_name</string>
     <string name="VENDOR_IMG_URL">VENDOR_IMG_URL</string>
     <string name="LAST_SIGN_IN_USER">LAST_SIGN_IN_USER</string>
+    <string name="VENDORS_UPLOAD">Vendor Uploads</string>
+    <string name="USER_PAID_ORDES">User Paid Orders</string>
+    <string name="Paid_Vendors_Brand_Section">Paid Vendors Brand Section</string>
+    <string name="USER_REG">User Registration</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="CACHE_LIST_OF_VENDORS">CACHE_LIST_OF_VENDORS</string>
 
 
 </resources>

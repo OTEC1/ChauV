@@ -1,21 +1,17 @@
 package com.example.chauvendor.UI;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,20 +33,13 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.example.chauvendor.R;
-import com.example.chauvendor.constant.Constants;
 import com.example.chauvendor.model.Vendor_uploads;
 import com.example.chauvendor.util.Find;
 import com.example.chauvendor.util.utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -63,25 +52,27 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.app.Activity.RESULT_OK;
+import static com.example.chauvendor.constant.Constants.CHARGES;
 import static com.example.chauvendor.constant.Constants.IMG_URL;
 import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 
+public class Vendor_account extends AppCompatActivity {
 
-public class account extends Fragment {
 
+    private ProgressBar progressBar, progressBar1, progressBar_img;
+    private BottomNavigationView bottomNavigationView;
     private Button pic_select, upload1, view_review;
     private EditText foodprice, foodname;
-    private Uri imgUri;
-    private ImageView image_view;
     private CircleImageView vendor_img;
     private TextView shopname, progress;
+    private Bundle bundle = new Bundle();
+    private ImageView image_view;
     private Spinner spinner;
-    private ProgressBar progressBar, progressBar1, progressBar_img;
+    private Uri imgUri;
 
-    private boolean confirm = false, verified = false;
-    private String string = "Indicate", p1, p2, p3, TAG = "accountFragment";
-    private static String responsed = "";
+
+    private boolean confirm = false;
+    private String string = "Indicate", p1, p2, p3, pic_key, TAG = "accountFragment";
 
 
     private FirebaseFirestore mfirebaseFirestore;
@@ -90,43 +81,31 @@ public class account extends Fragment {
     private ArrayAdapter adapter1;
 
 
-    private void start_pref() {
-        sp = getActivity().getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE);
-    }
-
-
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_vendor_account);
         mfirebaseFirestore = FirebaseFirestore.getInstance();
-        if (responsed.trim().length() <= 0)
-            responsed = quick_commission_call();
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mfirebaseFirestore = FirebaseFirestore.getInstance();
-        View view = inflater.inflate(R.layout.fragment_account, container, false);
-        pic_select = (Button) view.findViewById(R.id.pic_select);
-        upload1 = (Button) view.findViewById(R.id.upload);
-        view_review = (Button) view.findViewById(R.id.view_review);
-        foodprice = (EditText) view.findViewById(R.id.foodprice);
-        foodname = (EditText) view.findViewById(R.id.foodname);
-        image_view = (ImageView) view.findViewById(R.id.image_view);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar3);
-        progressBar1 = (ProgressBar) view.findViewById(R.id.progressBar4);
-        progressBar_img = (ProgressBar) view.findViewById(R.id.progressBar5);
-        vendor_img = (CircleImageView) view.findViewById(R.id.vendor_img);
-        spinner = (Spinner) view.findViewById(R.id.spinners);
-        shopname = (TextView) view.findViewById(R.id.shop_name);
-        progress = (TextView) view.findViewById(R.id.progress);
+        pic_select = (Button) findViewById(R.id.pic_select);
+        upload1 = (Button) findViewById(R.id.upload);
+        view_review = (Button) findViewById(R.id.view_review);
+        foodprice = (EditText) findViewById(R.id.foodprice);
+        foodname = (EditText) findViewById(R.id.foodname);
+        image_view = (ImageView) findViewById(R.id.image_view);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar3);
+        progressBar1 = (ProgressBar) findViewById(R.id.progressBar4);
+        progressBar_img = (ProgressBar) findViewById(R.id.progressBar5);
+        vendor_img = (CircleImageView) findViewById(R.id.vendor_img);
+        spinner = (Spinner) findViewById(R.id.spinners);
+        shopname = (TextView) findViewById(R.id.shop_name);
+        progress = (TextView) findViewById(R.id.progress);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
+        new utils().bottom_nav(bottomNavigationView, this, bundle);
 
 
         if (FirebaseAuth.getInstance().getUid() != null)
             current_vendor();
 
-        start_pref();
         populate_drop_down();
 
 
@@ -138,8 +117,8 @@ public class account extends Fragment {
         });
 
 
-        if (responsed.trim().length() <= 0)
-            responsed = quick_commission_call();
+        if (CHARGES == null)
+            new utils().quick_commission_call(mfirebaseFirestore, TAG);
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -164,44 +143,50 @@ public class account extends Fragment {
                     message2("Pls Sign in.");
                 else if (string.equals("Indicate"))
                     message2("Pls indicate section to upload");
-                else if (responsed.trim().length() <= 0)
-                    responsed = quick_commission_call();
-                else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
+                else if (CHARGES == null) {
+                    new utils().quick_commission_call(mfirebaseFirestore, TAG);
+                    message2("Snap yr connection seems Poor !");
+                } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
                     hide_progress();
                     message2("Pls fill out both fields");
                 } else if (!confirm) {
                     hide_progress();
                     message2("Pls select Food Picture");
-                } else {
-                    if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0 && verified && responsed != null) {
+                } else if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0) {
+                    pic_key = getFile_extension(imgUri);
+                    if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
                         show_progress();
-                        String pic_key = getFile_extension(imgUri);
-                        if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
-                            String in = generate_name().concat(".png");
-
-                            send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in, responsed);
-                            credentials(in);
-
-                        } else if (!verified)
-                            message2("Pls Reload Page ! ");
-                        else {
-                            message2("Pls select an image");
-                            hide_progress();
-                        }
+                        String in = generate_name().concat(".png");
+                        send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in);
+                        credentials(in);
+                    } else {
+                        message2("Pls select a valid Image file");
+                        hide_progress();
                     }
                 }
             }
         });
 
-        return view;
+    }
+
+    private void message2(String s) {
+        new utils().message2(s, this);
+    }
+
+    private void show_progress() {
+        progressBar.setVisibility(View.VISIBLE);
     }
 
 
+    private void hide_progress() {
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void current_vendor() {
 
-        if (new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_NAME), null) != null) {
-            shopname.setText(new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_NAME), ""));
-            new utils().img_load(getActivity(), IMG_URL+new utils().instantiate_shared_preferences(sp, requireContext()).getString(getString(R.string.VENDOR_IMG_URL), ""), progressBar_img, vendor_img);
+        if (new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_NAME), null) != null) {
+            shopname.setText(new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_NAME), ""));
+            new utils().img_load(getApplicationContext(), IMG_URL + new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_IMG_URL), ""), progressBar_img, vendor_img);
             progressBar1.setVisibility(View.GONE);
         } else {
             DocumentReference user = mfirebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid());
@@ -211,7 +196,7 @@ public class account extends Fragment {
                     if (task.isSuccessful()) {
                         shopname.setText(String.valueOf(task.getResult().get("name")));
                         progressBar1.setVisibility(View.GONE);
-                        new utils().img_load(getActivity(), IMG_URL+task.getResult().get("img_url"), progressBar_img, vendor_img);
+                        new utils().img_load(getApplicationContext(), IMG_URL + task.getResult().get("img_url"), progressBar_img, vendor_img);
                         I(getString(R.string.VENDOR_NAME), task.getResult().get("name").toString());
                         I(getString(R.string.VENDOR_IMG_URL), task.getResult().get("img_url").toString());
                     }
@@ -222,26 +207,7 @@ public class account extends Fragment {
 
 
     private void I(String a, String s) {
-        new utils().instantiate_shared_preferences(sp, requireContext()).edit().putString(a, s).apply();
-    }
-
-
-    private String quick_commission_call() {
-
-        DocumentReference user = mfirebaseFirestore.collection("west").document("token");
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    responsed = String.valueOf(task.getResult().get("tokens"));
-                    verified = true;
-                } else
-                    Log.d(TAG, String.valueOf(task.getException()));
-            }
-        });
-
-        return responsed;
-
+        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(a, s).apply();
     }
 
 
@@ -273,9 +239,9 @@ public class account extends Fragment {
     }
 
 
-    private void send_data_to_firebase(String price, String toString1, String pic_key, String response) {
+    private void send_data_to_firebase(String price, String toString1, String pic_key) {
 
-        int res = Integer.parseInt(response) + Integer.parseInt(price);
+        int res = Integer.parseInt(CHARGES.toString()) + Integer.parseInt(price);
         //message2("Final"+res+"  "+response);
         DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
         Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key, string, FirebaseAuth.getInstance().getUid(), 0, 0, reference.getId(), 0);
@@ -284,8 +250,6 @@ public class account extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     message2("Uploaded  successfully.. Pls wait image uploading..");
-                    verified = false;
-                    responsed = "";
                 } else
                     message2("Error " + task.getException());
             }
@@ -301,8 +265,8 @@ public class account extends Fragment {
         java.security.Security.setProperty("networkaddress.cache.ttl", "60");
         s3.setRegion(Region.getRegion(Regions.EU_WEST_3));
         //s3.setObjectAcl("", ".png", CannedAccessControlList.PublicRead);
-        TransferUtility transferUtility = new TransferUtility(s3, getActivity());
-        String d = Find.get_file_selected_path(imgUri, getContext());
+        TransferUtility transferUtility = new TransferUtility(s3, getApplicationContext());
+        String d = Find.get_file_selected_path(imgUri, getApplicationContext());
         TransferObserver trans = transferUtility.upload(p3, string, new File(d));
         trans.setTransferListener(new TransferListener() {
             @Override
@@ -366,7 +330,7 @@ public class account extends Fragment {
 
     private String getFile_extension(Uri uri) {
         MimeTypeMap mine = MimeTypeMap.getSingleton();
-        return mine.getExtensionFromMimeType(getActivity().getContentResolver().getType(uri));
+        return mine.getExtensionFromMimeType(getApplicationContext().getContentResolver().getType(uri));
     }
 
 
@@ -391,24 +355,11 @@ public class account extends Fragment {
         arrayList.add("Tea and beard");
         arrayList.add("Noodle and egg");
 
-        adapter1 = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, arrayList);
+        adapter1 = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
         adapter1.setDropDownViewResource(R.layout.text_pad);
         spinner.setAdapter(adapter1);
 
     }
 
-
-    private void show_progress() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void hide_progress() {
-        progressBar.setVisibility(View.INVISIBLE);
-    }
-
-
-    private void message2(String s) {
-        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
-    }
 
 }
