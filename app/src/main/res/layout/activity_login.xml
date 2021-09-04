@@ -4,9 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/chau_vendor"
+    android:background="@color/app_back_color"
     android:onClick="space"
     tools:context=".UI.Login">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:src="@mipmap/chau_logo"
+        android:textColor="#fff"
+        android:textSize="50sp" />
 
 
     <ScrollView
@@ -34,13 +44,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:text="Sign in"
-                    android:textColor="#fff"
-                    android:textSize="50sp" />
+                    android:text="Login"
+                    android:textColor="#000"
+                    android:textSize="30sp" />
             </RelativeLayout>
-
-
-
 
 
             <EditText
@@ -82,33 +89,32 @@
 
                 <TextView
                     android:id="@+id/fogot_pass"
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="20dp"
-                    android:paddingEnd="5dp"
-                    android:paddingRight="5dp"
+                    android:background="@drawable/custom_lines1"
+                    android:gravity="center_horizontal"
+                    android:padding="10dp"
                     android:text="Forgot Password"
+                    android:textAlignment="center"
                     android:textColor="@color/linkBlue"
                     android:textSize="16sp" />
 
 
             </RelativeLayout>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/email_sign_in_button"
-                android:layout_width="wrap_content"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/back"
+                android:background="@drawable/back_button"
                 android:text="@string/sign_in"
                 android:textAllCaps="false"
                 android:textColor="#fff"
                 android:textStyle="bold" />
-
 
 
             <RelativeLayout
@@ -119,12 +125,13 @@
 
                 <TextView
                     android:id="@+id/link_register"
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:padding="20sp"
                     android:layout_marginTop="20dp"
+                    android:padding="20sp"
                     android:text="@string/register"
+                    android:textAlignment="center"
                     android:textColor="@color/Black"
                     android:textSize="16sp" />
 

@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    android:onClick="space"
+    android:id="@+id/frame_use"
     tools:context=".UI.Top_section">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:onClick="space">
+        android:layout_height="match_parent">
 
 
         <TextView
