@@ -13,11 +13,15 @@ import android.widget.ProgressBar;
 
 import com.example.chauvendor.Adapter.Notification_main_view;
 import com.example.chauvendor.R;
+import com.example.chauvendor.util.User;
+import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -37,6 +41,7 @@ public class Main_notification extends AppCompatActivity {
     private ProgressBar progressBar;
     private BottomNavigationView bottom_nav;
     private Bundle bundle = new Bundle();
+    private  UserLocation user;
 
 
     private List<String> list3;

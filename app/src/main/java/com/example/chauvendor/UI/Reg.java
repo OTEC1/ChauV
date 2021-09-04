@@ -42,10 +42,9 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chauvendor.R;
-import com.example.chauvendor.model.User;
-import com.example.chauvendor.model.UserLocation;
+import com.example.chauvendor.util.User;
+import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.Find;
-import com.example.chauvendor.util.UserClient;
 import com.example.chauvendor.util.utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -53,8 +52,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -348,16 +345,13 @@ public class Reg extends AppCompatActivity {
         DocumentReference userref = mfirestore.collection(getString(R.string.Vendor_reg)).document(user_id);
         userref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Log.d(TAG, " onComplete successfully got details");
                 message_reg("Member Registered");
-                // System.out.println(task.getResult().getData());
                 User user = task.getResult().toObject(User.class);
                 if (user == null)
                     return;
 
                 muserLocation.setUser(user);
                 muserLocation.setTimestamp(null);
-                ((UserClient) getApplicationContext()).setUser(user);
                 getLast_know_Location(user_id, 1);
             }
         });
@@ -379,8 +373,8 @@ public class Reg extends AppCompatActivity {
 
 
         LocationRequest mLocationRequest = LocationRequest.create();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(500);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FAST_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
@@ -428,8 +422,10 @@ public class Reg extends AppCompatActivity {
     //-----------------------------------------------End of Location Query------------------------------------//
 
 
-    //-----------------------------------------------S3 Query------------------------------------//
 
+
+
+    //-----------------------------------------------S3 Query------------------------------------//
     private void credentials() {
 
         DocumentReference user = mfirestore.collection("east").document("lab");

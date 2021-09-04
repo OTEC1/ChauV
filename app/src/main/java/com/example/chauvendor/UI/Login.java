@@ -21,12 +21,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.chauvendor.R;
+import com.example.chauvendor.util.User;
+import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -131,9 +136,9 @@ public class Login extends AppCompatActivity {
         if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils()
                 .instantiate_shared_preferences(sp, getApplicationContext())
                 .getString(getString(R.string.LAST_SIGN_IN_USER), ""))
-                &&  new utils()
-                .instantiate_shared_preferences(sp, getApplicationContext())
-                .getString(getString(R.string.LAST_SIGN_IN_USER), "").trim().length()>0) {
+                &&
+                new utils().instantiate_shared_preferences(sp, getApplicationContext())
+                        .getString(getString(R.string.LAST_SIGN_IN_USER), "").trim().length() > 0) {
             Map<String, Object> i = new HashMap<>();
             i.put("token", "");
             RE_USE(1, i, new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), ""));
@@ -147,8 +152,7 @@ public class Login extends AppCompatActivity {
         documentReference.update(s).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 if (i != 1) {
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    progressBar.setVisibility(View.INVISIBLE);
+                    VENDOR_LOACATION_QUERY();
                     FINAL_DOC_REF();
                 }
             } else {
@@ -158,6 +162,27 @@ public class Login extends AppCompatActivity {
             }
 
         });
+    }
+
+    List<Map<String, Object>> pack = new ArrayList<>();
+
+    private void VENDOR_LOACATION_QUERY() {
+
+        firebaseFirestore.collection(getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid())
+                .get().addOnCompleteListener(h -> {
+            if (h.isSuccessful()) {
+                UserLocation geoPoint = new UserLocation();
+                geoPoint.setUser(h.getResult().get("user",User.class));
+                geoPoint.setGeo_point(h.getResult().getGeoPoint("geo_point"));
+                new utils().CACHE_VENDOR(geoPoint, getApplicationContext(), 0, getString(R.string.VENDOR));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                progressBar.setVisibility(View.INVISIBLE);
+            }
+            else
+                new utils().message2("Error Getting "+editText.getText().toString()+" Vendor Details ! ", this);
+
+        });
+
     }
 
 

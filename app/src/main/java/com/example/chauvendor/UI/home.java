@@ -34,7 +34,8 @@ public class home extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (FirebaseAuth.getInstance().getUid() != null)
+            adapter.startListening();
     }
 
 
@@ -55,14 +56,14 @@ public class home extends Fragment {
         realLayout.setOnClickListener(k -> {
 
         });
-        reference = FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid());
-        api_call2();
-        return  view;
+        if (FirebaseAuth.getInstance().getUid() != null)
+            api_call2();
+        return view;
     }
 
 
     private void api_call2() {
-        Query query = reference;
+        Query query = reference = FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid());
         FirestoreRecyclerOptions<Category> options = new FirestoreRecyclerOptions.Builder<Category>().setQuery(query, Category.class).build();
         set_layout(options);
     }

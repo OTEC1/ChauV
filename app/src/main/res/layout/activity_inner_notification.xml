@@ -84,7 +84,7 @@
             </RelativeLayout>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/pay_for_order"
+                android:id="@+id/call_out_to_delivery_agent"
                 android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

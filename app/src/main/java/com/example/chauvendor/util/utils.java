@@ -64,6 +64,9 @@ public class utils {
     private SharedPreferences sp;
 
 
+
+    public SharedPreferences start(Context context) {  return sp = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);}
+
     public SharedPreferences start_pref2(Context context) {
         return sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -290,6 +293,34 @@ public class utils {
         collection.apply();
 
     }
+
+
+
+
+
+
+
+    //Cache Sign in User.
+    public void CACHE_VENDOR(UserLocation first, Context context, int N, String tag) {
+        if (N == 0)
+            start(context).edit().putString(tag, null).apply();
+        SharedPreferences.Editor collection =  start(context).edit();
+        String area = new Gson().toJson(first);
+        collection.putString(tag, area);
+        collection.apply();
+
+    }
+
+
+    //Get Sign in user
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public UserLocation GET_VENDOR_CACHED(Context view, String tag) {
+        String arrayListString =  start(view).getString(tag, null);
+        Type type = new TypeToken<UserLocation>() {}.getType();
+        return new Gson().fromJson(arrayListString, type);
+
+    }
+
 
 
 

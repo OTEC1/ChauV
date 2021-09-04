@@ -1,4 +1,4 @@
-package com.example.chauvendor.model;
+package com.example.chauvendor.util;
 
 import android.os.Parcel;
 import android.os.Parcelable;

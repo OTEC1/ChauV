@@ -8,11 +8,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.chauvendor.Adapter.Notification_children_view;
 import com.example.chauvendor.R;
+import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,12 +29,14 @@ import java.util.Objects;
 
 public class Inner_notification extends AppCompatActivity {
 
-    private CollectionReference collectionReference;
-    private RecyclerView recyclerView;
-    private Notification_children_view adapter;
-    private ProgressBar progressBar;
     private BottomNavigationView bottomNavigationView;
+    private CollectionReference collectionReference;
+    private Notification_children_view adapter;
+    private UserLocation user;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
     private TextView totals;
+    private Button button;
 
 
     private List<String> list = new ArrayList<>();
@@ -40,8 +44,8 @@ public class Inner_notification extends AppCompatActivity {
 
 
     private String TAG = "notification_track";
-    private int i;
     private long send_in, work_on;
+    private int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class Inner_notification extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         totals = (TextView) findViewById(R.id.totals);
+        button = (Button) findViewById(R.id.call_out_to_delivery_agent);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, new Bundle());
 
@@ -58,7 +63,16 @@ public class Inner_notification extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             api_call1(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)));
 
+
+        button.setOnClickListener(o -> {
+            CHECK_FOR_NERBY_DELIVERYS();
+        });
     }
+
+
+
+
+
 
     private void api_call1(List<String> strings) {
         for (int y = 0; y < strings.size(); y++) {
@@ -91,4 +105,24 @@ public class Inner_notification extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
     }
+
+
+
+
+
+
+
+    private void CHECK_FOR_NERBY_DELIVERYS() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+            user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
+        FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid())
+                .get().addOnCompleteListener(i -> {
+            if (i.isSuccessful()) {
+                Log.d(TAG, "GET_VENDOR_LOCATION: " + user.getGeo_point() + "");
+            } else
+                new utils().message2("Error Getting ", this);
+        });
+    }
+
+
 }

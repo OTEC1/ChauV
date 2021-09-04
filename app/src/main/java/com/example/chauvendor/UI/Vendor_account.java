@@ -36,6 +36,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chauvendor.R;
 import com.example.chauvendor.model.Vendor_uploads;
 import com.example.chauvendor.util.Find;
+import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -79,6 +80,7 @@ public class Vendor_account extends AppCompatActivity {
     private SharedPreferences sp;
     private ArrayList arrayList;
     private ArrayAdapter adapter1;
+    private UserLocation user;
 
 
     @Override
@@ -169,51 +171,28 @@ public class Vendor_account extends AppCompatActivity {
 
     }
 
-    private void message2(String s) {
-        new utils().message2(s, this);
-    }
-
-    private void show_progress() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
 
 
-    private void hide_progress() {
-        progressBar.setVisibility(View.GONE);
-    }
+
 
     private void current_vendor() {
-
-        if (new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_NAME), null) != null) {
-            shopname.setText(new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_NAME), ""));
-            new utils().img_load(getApplicationContext(), IMG_URL + new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.VENDOR_IMG_URL), ""), progressBar_img, vendor_img);
-            progressBar1.setVisibility(View.GONE);
-        } else {
-            DocumentReference user = mfirebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid());
-            user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        shopname.setText(String.valueOf(task.getResult().get("name")));
-                        progressBar1.setVisibility(View.GONE);
-                        new utils().img_load(getApplicationContext(), IMG_URL + task.getResult().get("img_url"), progressBar_img, vendor_img);
-                        I(getString(R.string.VENDOR_NAME), task.getResult().get("name").toString());
-                        I(getString(R.string.VENDOR_IMG_URL), task.getResult().get("img_url").toString());
-                    }
-                }
-            });
-        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
+            user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
+        shopname.setText(user.getUser().getName());
+        new utils().img_load(getApplicationContext(), IMG_URL + user.getUser().getImg_url(), progressBar_img, vendor_img);
+        progressBar1.setVisibility(View.GONE);
     }
 
 
-    private void I(String a, String s) {
-        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(a, s).apply();
-    }
+
+
+
+
+
 
 
     //Step 5
     private void credentials(final String m) {
-
         DocumentReference user = mfirebaseFirestore.collection("east").document("lab");
         user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -239,6 +218,11 @@ public class Vendor_account extends AppCompatActivity {
     }
 
 
+
+
+
+
+    //Firebase
     private void send_data_to_firebase(String price, String toString1, String pic_key) {
 
         int res = Integer.parseInt(CHARGES.toString()) + Integer.parseInt(price);
@@ -258,6 +242,10 @@ public class Vendor_account extends AppCompatActivity {
     }
 
 
+
+
+
+    //S3
     private void send_data_to_s3(Uri imgUri, String string, String p1, String p2, String p3) throws URISyntaxException {
 
         AWSCredentials credentials = new BasicAWSCredentials(p1, p2);
@@ -361,5 +349,19 @@ public class Vendor_account extends AppCompatActivity {
 
     }
 
+
+
+
+    private void message2(String s) {
+        new utils().message2(s, this);
+    }
+
+    private void show_progress() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hide_progress() {
+        progressBar.setVisibility(View.GONE);
+    }
 
 }
