@@ -7,7 +7,7 @@ public class User implements Parcelable {
 
     private String email, user_id, username,
              name,phone,member_T,app_user,
-             img_url,token;
+             img_url,token,business_details;
 
 
     private  int fair,good,bad;
@@ -28,6 +28,7 @@ public class User implements Parcelable {
         good =in.readInt();
         fair =in.readInt();
         bad =in.readInt();
+        business_details =in.readString();
 
     }
 
@@ -89,22 +90,17 @@ public class User implements Parcelable {
         this.token = token;
     }
 
+    public String getBusiness_details() {
+        return business_details;
+    }
+
+    public void setBusiness_details(String business_details) {
+        this.business_details = business_details;
+    }
+
     @Override
     public String toString() {
-        return "User{" +
-                "email='" + email + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", member_T='" + member_T + '\'' +
-                ", app_user='" + app_user + '\'' +
-                ", img_url='" + img_url + '\'' +
-                ", token='" + token + '\'' +
-                ", fair=" + fair +
-                ", good=" + good +
-                ", bad=" + bad +
-                '}';
+        return "User{}";
     }
 
     public String getPhone() {
@@ -182,6 +178,7 @@ public class User implements Parcelable {
         dest.writeInt(good);
         dest.writeInt(fair);
         dest.writeInt(bad);
+        dest.writeString(business_details);
 
     }
 }

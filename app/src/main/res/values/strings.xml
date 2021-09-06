@@ -20,18 +20,19 @@
     <string name="previous">Previous</string>
     <string name="DEVICE_TOKEN">device_token</string>
     <string name="DEVICE_REG_TOKEN">device_reg_token</string>
-    <string name="VENDOR_NAME">vendor_name</string>
     <string name="VENDOR_IMG_URL">VENDOR_IMG_URL</string>
-    <string name="LAST_SIGN_IN_USER">LAST_SIGN_IN_USER</string>
+    <string name="LAST_SIGN_IN_VENDOR">LAST_SIGN_IN_VENDOR</string>
     <string name="VENDORS_UPLOAD">Vendor Uploads</string>
     <string name="USER_PAID_ORDES">User Paid Orders</string>
     <string name="Paid_Vendors_Brand_Section">Paid Vendors Brand Section</string>
     <string name="USER_REG">User Registration</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="DELIVERY_REG">Delivery Registration</string>
+    <string name="DELIVERY_LOCATION">Delivery Location</string>
     <string name="CACHE_LIST_OF_VENDORS">CACHE_LIST_OF_VENDORS</string>
     <string name="NAIRA">₦</string>
     <string name="VENDOR">VENDOR</string>
+    <string name="business_details">Business Details</string>
+    <string name="USER_LOCATION">User Location</string>
 
 
 </resources>

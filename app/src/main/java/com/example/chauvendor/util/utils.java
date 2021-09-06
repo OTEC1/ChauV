@@ -1,13 +1,17 @@
 package com.example.chauvendor.util;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,19 +36,15 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.chauvendor.R;
+import com.example.chauvendor.UI.Inner_notification;
 import com.example.chauvendor.UI.MainActivity;
 import com.example.chauvendor.UI.Main_notification;
 import com.example.chauvendor.UI.Vendor_account;
-import com.example.chauvendor.UI.home;
 import com.example.chauvendor.constant.Constants;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.gson.Gson;
@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
 public class utils {
 
 
@@ -64,8 +65,9 @@ public class utils {
     private SharedPreferences sp;
 
 
-
-    public SharedPreferences start(Context context) {  return sp = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);}
+    public SharedPreferences init(Context context) {
+        return sp = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
+    }
 
     public SharedPreferences start_pref2(Context context) {
         return sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -85,10 +87,6 @@ public class utils {
 
     }
 
-
-    public SharedPreferences instantiate_shared_preferences(SharedPreferences s, Context view) {
-        return s = Objects.requireNonNull(view.getSharedPreferences(view.getString(R.string.app_name), Context.MODE_PRIVATE));
-    }
 
     public static boolean doStringsMatch(String s1, String s2) {
         return s1.equals(s2);
@@ -200,11 +198,11 @@ public class utils {
     }
 
     public String TIME_FORMAT(String result) {
-        double l =  Double.parseDouble(result);
+        double l = Double.parseDouble(result);
         long h = (long) l;
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(h);
-        return  cal.getTime().toString().replace("GMT+01:00"," ");
+        return cal.getTime().toString().replace("GMT+01:00", " ");
     }
 
 
@@ -237,18 +235,13 @@ public class utils {
     }
 
 
-    public void quick_commission_call(FirebaseFirestore firebaseFirestore, String TAG) {
-
-        DocumentReference user = firebaseFirestore.collection("west").document("token");
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    Constants.CHARGES = String.valueOf(task.getResult().get("tokens"));
-
-                } else
-                    Log.d(TAG, String.valueOf(task.getException()));
-            }
+    public void quick_commission_call(String TAG) {
+        FirebaseFirestore.getInstance().collection("admins").document("Teasers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Constants.CHARGES = String.valueOf(task.getResult().get("tokens"));
+                Constants.REQUEST_KEY = task.getResult().get("Push_4_chauD").toString();
+            } else
+                Log.d(TAG, String.valueOf(task.getException()));
         });
 
 
@@ -295,16 +288,11 @@ public class utils {
     }
 
 
-
-
-
-
-
-    //Cache Sign in User.
+    //Cache Sign in Vendor.
     public void CACHE_VENDOR(UserLocation first, Context context, int N, String tag) {
         if (N == 0)
-            start(context).edit().putString(tag, null).apply();
-        SharedPreferences.Editor collection =  start(context).edit();
+            init(context).edit().putString(tag, null).apply();
+        SharedPreferences.Editor collection = init(context).edit();
         String area = new Gson().toJson(first);
         collection.putString(tag, area);
         collection.apply();
@@ -312,20 +300,35 @@ public class utils {
     }
 
 
-    //Get Sign in user
+    //Get Sign in Vendor.
     @RequiresApi(api = Build.VERSION_CODES.N)
     public UserLocation GET_VENDOR_CACHED(Context view, String tag) {
-        String arrayListString =  start(view).getString(tag, null);
+        String arrayListString = init(view).getString(tag, null);
         Type type = new TypeToken<UserLocation>() {}.getType();
         return new Gson().fromJson(arrayListString, type);
 
     }
 
 
+    public void VENDOR_LOCATION_QUERY(ProgressBar progressBar, AppCompatActivity context, EditText editText) {
+
+        FirebaseFirestore.getInstance().collection(context.getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(h -> {
+            if (h.isSuccessful()) {
+                UserLocation geoPoint = new UserLocation();
+                geoPoint.setUser(h.getResult().get("user", User.class));
+                geoPoint.setGeo_point(h.getResult().getGeoPoint("geo_point"));
+                CACHE_VENDOR(geoPoint, context, 0, context.getString(R.string.VENDOR));
+                context.startActivity(new Intent(context, MainActivity.class));
+                progressBar.setVisibility(View.INVISIBLE);
+            } else
+                new utils().message2("Error Getting " + editText.getText().toString() + " Vendor Details ! ", context);
+
+        });
+
+    }
 
 
-
-    public  void sum_quantity(QueryDocumentSnapshot o,Context view,TextView total,long work_on,long send_in){
+    public void sum_quantity(QueryDocumentSnapshot o, Context view, TextView total, long work_on, long send_in) {
         if (total.getText().toString().trim().length() > 0)
             work_on = Integer.parseInt(clean(total.getText().toString(), view.getString(R.string.NAIRA)).trim());
 
@@ -335,8 +338,69 @@ public class utils {
 
     }
 
+
     private String clean(String toString, String string) {
-        return toString.replace(string,"");
+        return toString.replace(string, "");
+    }
+
+    public Map<String, Object> maps() {
+        Map<String, Object> obj = new HashMap<>();
+        obj.put("VStatus", true);
+        return obj;
+
+    }
+
+
+    public void buildAlertMessageNoGps(Context context, int a, String as) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.app_name))
+                .setMessage(as)
+                .setCancelable(false)
+                .setPositiveButton("Ok", (dialog, id) -> {
+                    if (a == 0) {
+                        Intent intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        context.startActivity(intent1);
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+
+
+
+
+
+
+    public boolean verify(EditText editText1, EditText editText2, EditText editText3, EditText editText4,EditText editText5,EditText editText6, String string, AppCompatActivity context) {
+        if (editText1.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText1, "Pls fill out field");
+            return false;
+        } else if (editText2.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText2, "Pls fill out field");
+            return false;
+        } else if (editText3.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText3, "Pls fill out field");
+            return false;
+        } else if (editText4.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText4, "Pls fill out field");
+            return false;
+        } else if (editText5.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText5, "Pls fill out field");
+            return false;
+
+        } else if (editText6.getText().toString().isEmpty()) {
+            new utils().check_edit_text(editText6, "Pls fill out field");
+            return false;
+
+        } else if (!doStringsMatch(editText4.getText().toString(), editText5.getText().toString())) {
+            new utils().message2("Password does not match", context);
+            return false;
+        } else if (string.equals("Vendor Category")) {
+            new utils().message2("Pls Indicate vendor type.", context);
+            return false;
+        } else
+            return true;
     }
 
 

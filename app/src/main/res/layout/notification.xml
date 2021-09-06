@@ -24,7 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/text_color"
                 android:textStyle="bold" />
 
 
@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/user_name"
                 android:layout_margin="5dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/text_color"
                 android:textStyle="bold" />
 
             <TextView
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/phone"
                 android:layout_margin="5dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/text_color"
                 android:textStyle="bold" />
 
 
@@ -75,7 +75,7 @@
                 android:layout_below="@id/Status"
                 android:layout_alignParentRight="true"
                 android:layout_margin="5dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/text_color"
                 android:textStyle="bold" />
 
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_back_color"
-    android:onClick="space"
+    android:id="@+id/home_screen"
     tools:context=".UI.Login">
 
 
@@ -61,8 +61,8 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:padding="10dp"
-                android:textColor="#3F51B5"
-                android:textColorHint="#3F51B5" />
+                android:textColor="#000"
+                android:textColorHint="#000" />
 
 
             <EditText
@@ -76,8 +76,8 @@
                 android:inputType="textPassword"
                 android:maxLines="1"
                 android:padding="10dp"
-                android:textColor="#3F51B5"
-                android:textColorHint="#3F51B5" />
+                android:textColor="#000"
+                android:textColorHint="#000" />
 
 
             <RelativeLayout
@@ -87,34 +87,34 @@
                 android:layout_gravity="center">
 
 
-                <TextView
-                    android:id="@+id/fogot_pass"
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/email_sign_in_button"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/custom_lines1"
-                    android:gravity="center_horizontal"
-                    android:padding="10dp"
-                    android:text="Forgot Password"
-                    android:textAlignment="center"
-                    android:textColor="@color/linkBlue"
-                    android:textSize="16sp" />
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/back_button"
+                    android:text="@string/sign_in"
+                    android:textAllCaps="false"
+                    android:textColor="#000"
+                    android:textStyle="bold" />
 
 
             </RelativeLayout>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/email_sign_in_button"
+
+            <TextView
+                android:id="@+id/fogot_pass"
                 android:layout_width="300dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/back_button"
-                android:text="@string/sign_in"
-                android:textAllCaps="false"
-                android:textColor="#fff"
-                android:textStyle="bold" />
+                android:layout_marginTop="20dp"
+                android:background="@drawable/custom_lines1"
+                android:padding="14dp"
+                android:text="Forgot Password"
+                android:textAlignment="center"
+                android:textColor="#000"
+                android:textSize="16sp" />
 
 
             <RelativeLayout
@@ -133,7 +133,8 @@
                     android:text="@string/register"
                     android:textAlignment="center"
                     android:textColor="@color/Black"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:gravity="center_horizontal" />
 
             </RelativeLayout>
 

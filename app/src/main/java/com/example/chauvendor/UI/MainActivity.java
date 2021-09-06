@@ -1,6 +1,7 @@
 package com.example.chauvendor.UI;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -18,6 +19,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.MenuInflater;
@@ -32,6 +34,7 @@ import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -43,7 +46,6 @@ import static com.example.chauvendor.constant.Constants.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private SharedPreferences sp;
     private BottomNavigationView bottomNav;
     private FirebaseFirestore mfirestore;
     private UserLocation muserLocation;
@@ -56,20 +58,18 @@ public class MainActivity extends AppCompatActivity {
     private static long back_pressed;
     private static int Time_lapsed = 2000;
     private boolean decide = false;
-    private final boolean mLocationPermissionGranted = false, decision = false;
-
-
-
+    private final boolean decision = false;
 
 
     @Override
     protected void onResume() {
         super.onResume();
         decide = true;
-        new utils().openFragment(new home(), this, bundle);
-        if (CHARGES == null)
-           new  utils().quick_commission_call(mfirestore,TAG);
-        new utils().api_call_to_cache(getApplicationContext(), new ArrayList<>(),getString(R.string.CACHE_LIST_OF_VENDORS),1);
+        if (FirebaseAuth.getInstance().getUid() != null) {
+            if (CHARGES == null)
+                new utils().quick_commission_call(TAG);
+            new utils().api_call_to_cache(getApplicationContext(), new ArrayList<>(), getString(R.string.CACHE_LIST_OF_VENDORS), 1);
+        }
     }
 
 
@@ -79,15 +79,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
+
         NOTIFICATION_LISTER();
-        bundle.putString("UI_to_display", "2");
-        decide = new utils().bottom_nav(bottomNav, this, bundle);
-        policy();
-        check();
-        mfirestore = FirebaseFirestore.getInstance();
-        new utils().quick_commission_call(mfirestore,TAG);
-        if (FirebaseAuth.getInstance().getUid() != null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            CHECK_POLICY();
+        STRICT_POLICY();
+
+        if (FirebaseAuth.getInstance().getUid() == null)
+            startActivity(new Intent(this, Login.class).putExtra("check_view", String.valueOf(2)));
+        else {
+            mfirestore = FirebaseFirestore.getInstance();
+            bundle.putString("UI_to_display", "2");
+            decide = new utils().bottom_nav(bottomNav, this, bundle);
+            new utils().quick_commission_call(TAG);
+            if (FirebaseAuth.getInstance().getUid() != null)
                 new utils().openFragment(new home(), this, bundle);
+        }
 
 
     }
@@ -128,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //----------------------------------------------Permission for   file sharing ---------------------------------------------//
+    //----------------------------------------------Permission for file sharing ---------------------------------------------//
     //Step 1
-    public void policy() {
+    public void STRICT_POLICY() {
         int SDK_INT = android.os.Build.VERSION.SDK_INT;
         if (SDK_INT > 8) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Step 2
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    protected void check() {
+    public void CHECK_POLICY() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
         } else
@@ -234,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
             new utils().message2("Pls Sign out ", this);
     }
 
+
     public void signout(MenuItem item) {
         if (FirebaseAuth.getInstance().getUid() != null)
             UPDATE_DEVICE();
@@ -245,8 +253,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void UPDATE_DEVICE() {
         new utils().message2(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail() + " Signed Out", this);
-        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.LAST_SIGN_IN_USER), FirebaseAuth.getInstance().getUid()).apply();
-        new utils().instantiate_shared_preferences(sp, getApplicationContext()).edit().putString(getString(R.string.VENDOR_NAME), null).apply();
+        new utils().init(getApplicationContext()).edit().putString(getString(R.string.LAST_SIGN_IN_VENDOR), FirebaseAuth.getInstance().getUid()).apply();
+        new utils().CACHE_VENDOR(null, getApplicationContext(), 0, getString(R.string.VENDOR));
         FirebaseAuth.getInstance().signOut();
     }
 
@@ -259,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     public void space(View view) {
     }
+
+
 }

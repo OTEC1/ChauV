@@ -68,14 +68,13 @@ import static com.example.chauvendor.constant.Constants.*;
 public class Reg extends AppCompatActivity {
 
 
-    private EditText editText1, editText2, editText3, editText4, editText5;
+    private EditText editText1, editText2, editText3, editText4, editText5, editText6;
     private Button button_reg, button1;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list;
     private Spinner spinner;
-
     private ProgressBar mprogressBar;
-    private SharedPreferences sp;
+
 
     private UserLocation muserLocation;
     private FirebaseFirestore mfirestore;
@@ -83,10 +82,10 @@ public class Reg extends AppCompatActivity {
     private Uri imgUri;
 
 
-    private int z;
-    private String string, p1, p2, p3, img_url;
+    private String string, p1="", p2="", p3="", img_url;
     private static final String TAG = "RegisterActiviy";
-    private boolean mLocationPermissionGranted = false, once = false, confirm = false;
+    private boolean mLocationPermissionGranted = false;
+    private boolean once = false, confirm = false;
 
 
     @Override
@@ -95,8 +94,8 @@ public class Reg extends AppCompatActivity {
         mfirestore = FirebaseFirestore.getInstance();
         if (!mLocationPermissionGranted)
             checkMapServices();
-        getLast_know_Location(FirebaseAuth.getInstance().getUid(), 0);
-
+        if(mLocationPermissionGranted)
+            getLast_know_Location(FirebaseAuth.getInstance().getUid(), 0);
 
     }
 
@@ -119,6 +118,7 @@ public class Reg extends AppCompatActivity {
         editText3 = (EditText) findViewById(R.id.phone);
         editText4 = (EditText) findViewById(R.id.pass);
         editText5 = (EditText) findViewById(R.id.input_confirm_password);
+        editText6 = (EditText) findViewById(R.id.business_details);
         button_reg = (Button) findViewById(R.id.btn_register);
         spinner = (Spinner) findViewById(R.id.vendor_category);
         mprogressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -129,13 +129,13 @@ public class Reg extends AppCompatActivity {
 
 
         button_reg.setOnClickListener(view -> {
-            if (!new utils().instantiate_shared_preferences(sp, getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
+            if (!new utils().init(getApplicationContext()).getBoolean(getString(R.string.DEVICE_REG_TOKEN), false))
                 message_reg("Device not Registered Pls Relaunch or Reinstall App.");
             else {
                 if (checkMapServices()) {
+                    getLocationPermission();
                     if (mLocationPermissionGranted) {
-                        z = 0;
-                        if (verify() && confirm && TOKEN_OK()) {
+                        if (new utils().verify(editText1, editText2, editText3, editText4, editText5, editText6, string, this) && confirm && TOKEN_OK()) {
                             String pic_key = getFile_extension(imgUri);
                             if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
                                 img_url = generate_name().concat(".png");
@@ -144,12 +144,12 @@ public class Reg extends AppCompatActivity {
                                 message_reg("Invalid  File Selected");
                         } else if (!TOKEN_OK())
                             message_reg("Pls Reinstall App");
-                        else if (!confirm && z != 1)
+                        else if (!confirm)
                             message_reg("Pls select an image File");
                     } else
                         message_reg("Pls Reinstall and Grant all Permission");
                 } else
-                    getLocationPermission();
+                    message_reg("Google Map Can't work on this device");
             }
 
         });
@@ -172,8 +172,7 @@ public class Reg extends AppCompatActivity {
     }
 
     private boolean TOKEN_OK() {
-        return new utils().instantiate_shared_preferences(sp, getApplicationContext())
-                .getString(getString(R.string.DEVICE_TOKEN), "").trim().length() > 0;
+        return new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), "").trim().length() > 0;
     }
 
 
@@ -195,10 +194,11 @@ public class Reg extends AppCompatActivity {
                         user.setMember_T("I agree to Terms and Condition");
                         user.setApp_user(string);
                         user.setImg_url(img_url);
-                        user.setToken(new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
+                        user.setToken(new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
                         user.setGood(0);
                         user.setBad(0);
                         user.setFair(0);
+                        user.setBusiness_details(editText6.getText().toString());
 
                         DocumentReference new_member = mfirestore.collection(getString(R.string.Vendor_reg)).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
                         new_member.set(user).addOnCompleteListener(task1 -> {
@@ -244,7 +244,7 @@ public class Reg extends AppCompatActivity {
             Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
+            new utils().message("an error occurred but we can fix it pls follow instruction", this);
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(Reg.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
@@ -261,7 +261,6 @@ public class Reg extends AppCompatActivity {
             buildAlertMessageNoGps();
             return false;
         } else {
-            //sp.edit().putString("states","Ok").apply();
             Log.d(TAG, " Added Location Permission");
             return true;
         }
@@ -269,8 +268,9 @@ public class Reg extends AppCompatActivity {
 
     //Step 4
     private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Pls turn on your GPRS , do you want to enable it ?")
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.app_name))
+                .setMessage("Pls turn on your GPRS, do you want to enable it ?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -299,10 +299,9 @@ public class Reg extends AppCompatActivity {
         Log.d(TAG, "onActivityResult: called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if (mLocationPermissionGranted) {
-                    //sp.edit().putString("states","Ok").apply();
+                if (mLocationPermissionGranted)
                     Log.d(TAG, " Added Location Permission");
-                } else
+                else
                     getLocationPermission();
 
             }
@@ -422,9 +421,6 @@ public class Reg extends AppCompatActivity {
     //-----------------------------------------------End of Location Query------------------------------------//
 
 
-
-
-
     //-----------------------------------------------S3 Query------------------------------------//
     private void credentials() {
 
@@ -435,8 +431,10 @@ public class Reg extends AppCompatActivity {
                 p2 = task.getResult().getString("p2");
                 p3 = task.getResult().getString("p3");
                 try {
-                    if (p1.length() > 0 && p2.length() > 0 && p3.length() > 0)
-                        send_data_to_s3(p1, p2, p3, img_url);
+                    if (p1.length() > 0 && p2.length() > 0) {
+                        assert p3 != null;
+                        if (p3.length() > 0) send_data_to_s3(p1, p2, p3, img_url);
+                    }
                 } catch (Exception e) {
                     message(e);
                     Log.d(TAG, e.toString());
@@ -527,34 +525,6 @@ public class Reg extends AppCompatActivity {
         arrayAdapter.setDropDownViewResource(R.layout.text_pad);
         arrayAdapter.notifyDataSetChanged();
         spinner.setAdapter(arrayAdapter);
-    }
-
-
-    private boolean verify() {
-        if (editText1.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText1, "Pls fill out field");
-            return false;
-        } else if (editText2.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText2, "Pls fill out field");
-            return false;
-        } else if (editText3.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText3, "Pls fill out field");
-            return false;
-        } else if (editText4.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText4, "Pls fill out field");
-            return false;
-        } else if (editText5.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText5, "Pls fill out field");
-            return false;
-        } else if (!new utils().doStringsMatch(editText4.getText().toString(), editText5.getText().toString())) {
-            new utils().message2("Password does not match", this);
-            return false;
-        } else if (string.equals("Vendor Category")) {
-            new utils().message2("Pls Indicate vendor type.", this);
-            z = 1;
-            return false;
-        } else
-            return true;
     }
 
 

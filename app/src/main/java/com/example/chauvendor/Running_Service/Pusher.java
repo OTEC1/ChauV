@@ -33,7 +33,6 @@ public class Pusher {
         if(map.containsKey("error"))
             throw  new Exception(Objects.requireNonNull(map.get("error")).toString());
 
-        Log.d(TAG,REQUEST_KEY);
 
 return  null;
 

@@ -1,23 +1,33 @@
 package com.example.chauvendor.UI;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.chauvendor.R;
@@ -35,16 +45,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.example.chauvendor.constant.Constants.READ_STORAGE_PERMISSION_REQUEST_CODE;
+
 public class Login extends AppCompatActivity {
 
     private TextView link_register;
     private EditText editText, editText1;
     private Button button;
     private ProgressBar progressBar;
-    private SharedPreferences sp;
     private LocationManager locationManager;
     private FirebaseFirestore firebaseFirestore;
-
+    private RelativeLayout home_screen;
 
     private boolean status;
     private static final String TAG = "LoginActiviy";
@@ -55,14 +66,11 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        STRICT_POLICY();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            CHECK_POLICY();
 
-        if (getIntent().getStringExtra("check_view").equals("2")) {
-            locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-            status = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            //Refer to Reg activity
-            if (status)
-                buildAlertMessageNoGps();
-        }
+
     }
 
 
@@ -75,25 +83,24 @@ public class Login extends AppCompatActivity {
         editText1 = (EditText) findViewById(R.id.password);
         link_register = (TextView) findViewById(R.id.link_register);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        home_screen = (RelativeLayout) findViewById(R.id.home_screen);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        link_register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), Reg.class));
-            }
+        bull_eye();
+
+        home_screen.setOnClickListener(s -> {
         });
 
+        link_register.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), Reg.class)));
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onClick(View view) {
-                if (check())
+        button.setOnClickListener(view -> {
+            if (check())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     signIn();
 
-            }
+
         });
+
     }
 
 
@@ -124,7 +131,7 @@ public class Login extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void QUICK_DOC_REF() {
         Map<String, Object> i = new HashMap<>();
-        i.put("token", new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
+        i.put("token", new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
         RE_USE(0, i, Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
 
 
@@ -133,16 +140,25 @@ public class Login extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void FINAL_DOC_REF() {
-        if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils()
-                .instantiate_shared_preferences(sp, getApplicationContext())
-                .getString(getString(R.string.LAST_SIGN_IN_USER), ""))
-                &&
-                new utils().instantiate_shared_preferences(sp, getApplicationContext())
-                        .getString(getString(R.string.LAST_SIGN_IN_USER), "").trim().length() > 0) {
-            Map<String, Object> i = new HashMap<>();
-            i.put("token", "");
-            RE_USE(1, i, new utils().instantiate_shared_preferences(sp, getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_USER), ""));
-        }
+        //Already installation
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null) != null) {
+            //Another user sign in on device
+            if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))) {
+                Map<String, Object> i = new HashMap<>();
+                i.put("token", "");
+                RE_USE(1, i, new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null));
+                //Same user sign in again
+            } else
+                NAVIGATE_USER();
+            //First time installation
+        } else
+            NAVIGATE_USER();
+
+    }
+
+
+    private void NAVIGATE_USER() {
+        new utils().VENDOR_LOCATION_QUERY(progressBar, this, editText);
     }
 
 
@@ -151,10 +167,9 @@ public class Login extends AppCompatActivity {
         DocumentReference documentReference = firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id);
         documentReference.update(s).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (i != 1) {
-                    VENDOR_LOACATION_QUERY();
+                if (i != 1)
                     FINAL_DOC_REF();
-                }
+                NAVIGATE_USER();
             } else {
                 new utils().message("Account not Registered", this);
                 progressBar.setVisibility(View.GONE);
@@ -162,27 +177,6 @@ public class Login extends AppCompatActivity {
             }
 
         });
-    }
-
-    List<Map<String, Object>> pack = new ArrayList<>();
-
-    private void VENDOR_LOACATION_QUERY() {
-
-        firebaseFirestore.collection(getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid())
-                .get().addOnCompleteListener(h -> {
-            if (h.isSuccessful()) {
-                UserLocation geoPoint = new UserLocation();
-                geoPoint.setUser(h.getResult().get("user",User.class));
-                geoPoint.setGeo_point(h.getResult().getGeoPoint("geo_point"));
-                new utils().CACHE_VENDOR(geoPoint, getApplicationContext(), 0, getString(R.string.VENDOR));
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                progressBar.setVisibility(View.INVISIBLE);
-            }
-            else
-                new utils().message2("Error Getting "+editText.getText().toString()+" Vendor Details ! ", this);
-
-        });
-
     }
 
 
@@ -213,19 +207,6 @@ public class Login extends AppCompatActivity {
 
     //---------------------------------Location----------------------------------//
     //Step 1
-    private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Pls turn off GPS to reset location, do you want to turn off ?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        Intent intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(intent1);
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
 
 
     //Step 2
@@ -235,7 +216,6 @@ public class Login extends AppCompatActivity {
         Log.d(TAG, " Disabled Location ");
 
     }
-
     //------------------------------------------End Of Location--------------------------------//
 
 
@@ -263,5 +243,81 @@ public class Login extends AppCompatActivity {
         }
     }
 
+
+    //----------------------------------------------Permission for file sharing ---------------------------------------------//
+    //Step 1
+    public void STRICT_POLICY() {
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        if (SDK_INT > 8) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            Log.d(TAG, " Called !");
+        }
+    }
+
+
+    //Step 2
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public void CHECK_POLICY() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+
+        } else
+            request_permission();
+    }
+
+
+    //Step 3
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void request_permission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This Permission is needed for file sharing")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE_PERMISSION_REQUEST_CODE);
+                        }
+                    }).setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            }).create().show();
+        } else {
+            ActivityCompat.requestPermissions(Objects.requireNonNull(this), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_STORAGE_PERMISSION_REQUEST_CODE);
+        }
+
+
+    }
+
+
+    //Step 4
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == READ_STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                new utils().message2("Permission Granted", this);
+            else
+                new utils().message2("Permission Denied", this);
+
+        }
+
+    }
+    //----------------------------------------------End of file sharing ---------------------------------------------//
+
+
+    private void bull_eye() {
+        if (getIntent().getStringExtra("check_view").equals("2")) {
+            locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+            status = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            //Refer to Reg activity
+            if (status)
+                new utils().buildAlertMessageNoGps(this, 0, "Pls turn off GPRS to reset location, do you want to turn off?");
+
+        }
+    }
 
 }

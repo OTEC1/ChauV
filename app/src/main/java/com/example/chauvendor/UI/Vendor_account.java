@@ -81,7 +81,6 @@ public class Vendor_account extends AppCompatActivity {
 
 
     private FirebaseFirestore mfirebaseFirestore;
-    private SharedPreferences sp;
     private ArrayList arrayList;
     private ArrayAdapter adapter1;
     private UserLocation user;
@@ -133,7 +132,7 @@ public class Vendor_account extends AppCompatActivity {
 
 
         if (CHARGES == null)
-            new utils().quick_commission_call(mfirebaseFirestore, TAG);
+            new utils().quick_commission_call(TAG);
 
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -159,7 +158,7 @@ public class Vendor_account extends AppCompatActivity {
                 else if (string.equals("Indicate"))
                     message2("Pls indicate section to upload");
                 else if (CHARGES == null) {
-                    new utils().quick_commission_call(mfirebaseFirestore, TAG);
+                    new utils().quick_commission_call(TAG);
                     message2("Snap yr connection seems Poor !");
                 } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
                     hide_progress();
@@ -187,7 +186,6 @@ public class Vendor_account extends AppCompatActivity {
 
 
 
-
     private void current_vendor() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
@@ -195,11 +193,6 @@ public class Vendor_account extends AppCompatActivity {
         new utils().img_load(getApplicationContext(), IMG_URL + user.getUser().getImg_url(), progressBar_img, vendor_img);
         progressBar1.setVisibility(View.GONE);
     }
-
-
-
-
-
 
 
 

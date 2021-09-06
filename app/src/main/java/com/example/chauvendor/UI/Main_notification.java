@@ -23,6 +23,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -86,8 +87,7 @@ public class Main_notification extends AppCompatActivity {
     private void Check_for_vendor_id(List<String> list, int os) {
         for (i = 0; i < list.size(); i++) {
             String a = list.get(i);
-            collectionReference = mfirestore.collection(getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(a);
-            collectionReference.get().addOnCompleteListener(n -> {
+              mfirestore.collection(getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(a).orderBy("TimeStamp", Query.Direction.DESCENDING).get().addOnCompleteListener(n -> {
                 if (n.isSuccessful()) {
                     for (QueryDocumentSnapshot x : n.getResult()) {
                         if (os == 0) {
@@ -95,13 +95,13 @@ public class Main_notification extends AppCompatActivity {
                                 list2.add(new utils().map(x, 2, a));
                                 if (i == list.size()) {
                                     set_layout(list2);
-                                    Log.d(TAG, String.valueOf(list2));
+                                   // Log.d(TAG, String.valueOf(list2));
                                 }
                             }
                         } else if (os == 1) {
                             if (x.getId().equals(getIntent().getStringExtra("docs"))) {
                                 list2.add(new utils().map(x, 2, a));
-                                Log.d(TAG, a + "     " + x.getId() + "    " + getIntent().getStringExtra("docs") + "     " + getIntent().getStringExtra("docs") + "    " + list2);
+                               // Log.d(TAG, a + "     " + x.getId() + "    " + getIntent().getStringExtra("docs") + "     " + getIntent().getStringExtra("docs") + "    " + list2);
                                 set_layout(list2);
                             }
                         }
