@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -81,9 +82,18 @@ public class utils {
         Toast.makeText(x, s, Toast.LENGTH_SHORT).show();
     }
 
+
     public void message(String s, AppCompatActivity a) {
+        Toast.makeText(a, s, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void message2(String s, Activity a) {
         View parentLayout = a.findViewById(android.R.id.content);
-        Snackbar.make(parentLayout, s, Snackbar.LENGTH_LONG).show();
+        Snackbar snack = Snackbar.make(parentLayout, s, Snackbar.LENGTH_LONG);
+        snack.getView().setPadding(0, 0, 0, 0);
+        snack.getView().setBackground(ContextCompat.getDrawable(a, R.drawable.contianer_snackbar));
+        snack.show();
 
     }
 
@@ -97,13 +107,6 @@ public class utils {
             edit.setError(string);
             edit.requestFocus();
         }
-    }
-
-
-    public void message2(String s, Activity a) {
-        View parentLayout = a.findViewById(android.R.id.content);
-        Snackbar.make(parentLayout, s, Snackbar.LENGTH_SHORT).show();
-
     }
 
 
@@ -183,15 +186,17 @@ public class utils {
             pack.put("cart_tracker", result.get("Cart_tracker"));
         } else if (r == 2) {
             pack.put("docs_id", result.getId());
-            pack.put("Status", result.get("Status"));
+            pack.put("dstatus", result.get("DStatus"));
             pack.put("TimeStamp", TIME_FORMAT(result.get("TimeStamp").toString()));
+            pack.put("vstatus", result.get("VStatus"));
             pack.put("item_count", result.get("item_count"));
+            pack.put("name", result.get("name"));
             pack.put("order_id", result.get("order_id"));
             pack.put("phone", result.get("phone"));
             pack.put("users", result.get("users"));
-            pack.put("name", result.get("name"));
             pack.put("current_doc", a);
             pack.put("cart_tracker", result.get("Cart_tracker"));
+            pack.put("OBJ", result.get("OBJ"));
 
         }
         return pack;
@@ -304,7 +309,8 @@ public class utils {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public UserLocation GET_VENDOR_CACHED(Context view, String tag) {
         String arrayListString = init(view).getString(tag, null);
-        Type type = new TypeToken<UserLocation>() {}.getType();
+        Type type = new TypeToken<UserLocation>() {
+        }.getType();
         return new Gson().fromJson(arrayListString, type);
 
     }
@@ -367,12 +373,7 @@ public class utils {
     }
 
 
-
-
-
-
-
-    public boolean verify(EditText editText1, EditText editText2, EditText editText3, EditText editText4,EditText editText5,EditText editText6, String string, AppCompatActivity context) {
+    public boolean verify(EditText editText1, EditText editText2, EditText editText3, EditText editText4, EditText editText5, EditText editText6, String string, AppCompatActivity context) {
         if (editText1.getText().toString().isEmpty()) {
             new utils().check_edit_text(editText1, "Pls fill out field");
             return false;

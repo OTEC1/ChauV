@@ -222,7 +222,7 @@ public class Login extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        new utils().message("Press twice to exit", this);
+        new utils().message1("Press twice to exit", this);
         if (back_pressed + Time_lapsed > System.currentTimeMillis()) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);

@@ -69,7 +69,7 @@ public class Vendor_account extends AppCompatActivity {
     private Button pic_select, upload1, view_review;
     private EditText foodprice, foodname;
     private CircleImageView vendor_img;
-    private TextView shopname, progress;
+    private TextView shopname, progress,phone, business;
     private Bundle bundle = new Bundle();
     private ImageView image_view;
     private Spinner spinner;
@@ -103,6 +103,8 @@ public class Vendor_account extends AppCompatActivity {
         vendor_img = (CircleImageView) findViewById(R.id.vendor_img);
         spinner = (Spinner) findViewById(R.id.spinners);
         shopname = (TextView) findViewById(R.id.shop_name);
+        phone = (TextView) findViewById(R.id.phone);
+        business = (TextView) findViewById(R.id.business_details);
         progress = (TextView) findViewById(R.id.progress);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, bundle);
@@ -189,7 +191,9 @@ public class Vendor_account extends AppCompatActivity {
     private void current_vendor() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
-        shopname.setText(user.getUser().getName());
+        shopname.setText(" "+user.getUser().getName());
+        phone.setText(" "+user.getUser().getPhone());
+        business.setText(" "+user.getUser().getBusiness_details());
         new utils().img_load(getApplicationContext(), IMG_URL + user.getUser().getImg_url(), progressBar_img, vendor_img);
         progressBar1.setVisibility(View.GONE);
     }

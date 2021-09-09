@@ -3,6 +3,7 @@ package com.example.chauvendor.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,12 +26,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Notification_main_view extends RecyclerView.Adapter<Notification_main_view.MyHolder> {
 
-    private Task<Void> documentReference;
+
     private List<Map<String, Object>> items;
     private Context context;
+
+
+    private String c, TAG = "Notification_main_view";
 
     public Notification_main_view(Context context, List<Map<String, Object>> items) {
         this.items = items;
@@ -48,7 +53,21 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
     @Override
     public void onBindViewHolder(@NonNull @NotNull Notification_main_view.MyHolder holder, int position) {
 
-        holder.mStatus.setText(new utils().Stringnify(items.get(position).get("Status")));
+        Log.d(TAG, "onBindViewHolder: " + items);
+
+        boolean obj = (boolean) items.get(position).get("OBJ");
+        boolean bool = (boolean) items.get(position).get("dstatus");
+        boolean bool2 = (boolean) items.get(position).get("vstatus");
+
+        if (!obj && !bool && !bool2)
+            c = "New";
+        else if (obj && !bool)
+            c = "Seen";
+        else if (bool2 && obj)
+            c = "Dispatched";
+
+
+        holder.mStatus.setText(c);
         holder.mitem_count.setText((Integer.parseInt(new utils().Stringnify(items.get(position).get("item_count"))) == 1) ? new utils().Stringnify(items.get(position).get("item_count")) + " item" : new utils().Stringnify(items.get(position).get("item_count")) + " items");
         holder.mphone.setText("Phone: " + new utils().Stringnify(items.get(position).get("phone")));
         holder.mvendor_name.setText(new utils().Stringnify(items.get(position).get("name")));
@@ -59,35 +78,34 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
         holder.cardView.setOnClickListener(o -> {
             Intent intent = new Intent(context, Inner_notification.class);
-            intent.putExtra("data_key",items.get(position).get("cart_tracker").toString());
-            intent.putExtra("docs_key",items.get(position).get("current_doc").toString());
+            intent.putExtra("data_key", items.get(position).get("cart_tracker").toString());
+            intent.putExtra("docs_key", items.get(position).get("current_doc").toString());
+            intent.putExtra("docID", items.get(position).get("docs_id").toString());
             context.startActivity(intent);
-            UPDATE_DOC(items.get(position).get("current_doc"), items.get(position).get("docs_id"), holder.mStatus.getContext(), items.get(position).get("Status"));
+            if (!holder.mStatus.getText().equals("Seen"))
+                UPDATE_DOC(items.get(position).get("current_doc"), items.get(position).get("docs_id"), holder.mStatus.getContext(), Boolean.getBoolean("vstatus"));
         });
 
     }
 
 
-    private void UPDATE_DOC(Object current_doc, Object doc, Context context, Object status) {
+    private void UPDATE_DOC(Object current_doc, Object doc, Context context, boolean status) {
 
-        if (status.toString().equals("New")) {
+        if (!status) {
             Map<String, Object> p = new HashMap<>();
-            p.put("Status", "Seen");
-            documentReference = FirebaseFirestore.getInstance().collection(context.getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(current_doc.toString()).document(doc.toString())
+            p.put("OBJ", true);
+            FirebaseFirestore.getInstance().collection(context.getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(current_doc.toString()).document(doc.toString())
                     .update(p)
                     .addOnCompleteListener(i -> {
                         if (i.isSuccessful())
-                            Toast.makeText(context, "Viewed Order", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "UPDATE_DOC: Viewed Order");
+                        else
+                            Log.d(TAG, "UPDATE_DOC: " + i, i.getException());
                     });
         }
 
     }
 
-    private Bundle pass_on(Object order_id) {
-        Bundle bundle = new Bundle();
-        bundle.putString("vendor", order_id.toString());
-        return bundle;
-    }
 
     @Override
     public int getItemCount() {

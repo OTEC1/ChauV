@@ -43,6 +43,7 @@ public class Inner_notification extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private CollectionReference collectionReference;
+    private DocumentReference doc;
     private Notification_children_view adapter;
     private ProgressDialog progressDialog;
     private UserLocation user;
@@ -72,24 +73,28 @@ public class Inner_notification extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inner_notification);
-
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         totals = (TextView) findViewById(R.id.totals);
         button = (Button) findViewById(R.id.call_out_to_delivery_agent);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, new Bundle());
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             api_call1(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)));
+
+        Log.d(TAG, "onCreate: "+getIntent().getStringExtra("docID"));
+
+        doc = FirebaseFirestore.getInstance().collection(getString(R.string.Paid_Vendors_Brand_Section))
+                .document("Orders")
+                .collection(getIntent().getStringExtra("docs_key"))
+                .document(getIntent().getStringExtra("docID"));
 
 
         button.setOnClickListener(o -> {
             progressD().show();
-            CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(FirebaseFirestore.getInstance()
-                    .collection(getString(R.string.Paid_Vendors_Brand_Section))
-                    .document("Orders").collection(getIntent()
-                            .getStringExtra("docs_key")).document("DOC")
-                    .collection("OI").document(getIntent().getStringExtra("data_key")), 0);
+            CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(doc, 0);
         });
     }
 
@@ -137,9 +142,8 @@ public class Inner_notification extends AppCompatActivity {
         else
             b.get().addOnCompleteListener(n -> {
                 if (n.isSuccessful()) {
-                    status = n.getResult().getBoolean("VStatus");
-                    if (!status)
-                        PASS_ON();
+                    if (!n.getResult().getBoolean("VStatus"))
+                        PASS_ON(n.getResult().get("TimeStamp"));
                     else {
                         progressDialog.dismiss();
                         new utils().buildAlertMessageNoGps(this, 1, "Already Sent Request " + getString(R.string.app_name) + " is Searching for nearby Delivery Guys...");
@@ -152,7 +156,7 @@ public class Inner_notification extends AppCompatActivity {
     }
 
 
-    private void PASS_ON() {
+    private void PASS_ON(Object timeStamp) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
@@ -168,7 +172,7 @@ public class Inner_notification extends AppCompatActivity {
                 if (token_gotten != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                         token_gotten.forEach(x -> token_approved = new HashSet<>(token_gotten));
-                    MINER_OUT_INDEX_VENDOR(current_vendor_index);
+                    MINER_OUT_INDEX_VENDOR(current_vendor_index, timeStamp);
                 }
             } else
                 new utils().message2("Error Getting " + i.getException(), this);
@@ -178,12 +182,13 @@ public class Inner_notification extends AppCompatActivity {
     }
 
 
-    private void MINER_OUT_INDEX_VENDOR(String current_vendor_index) {
+    private void MINER_OUT_INDEX_VENDOR(String current_vendor_index, Object timeStamp) {
         FirebaseFirestore.getInstance().collection(getString(R.string.USER_LOCATION)).document(current_vendor_index)
                 .get().addOnCompleteListener(w -> {
             if (w.isSuccessful()) {
                 UserLocation user1 = w.getResult().toObject(UserLocation.class);
-                SEND_NOTIFICATION(token_approved, user1.getUser().getPhone(), user1.getGeo_point(), user.getUser().getImg_url(), user.getUser().getPhone());
+                assert user1 != null;
+                SEND_NOTIFICATION(token_approved, user1.getUser().getUser_id(), user1.getUser().getPhone(), user1.getGeo_point(), user.getUser().getImg_url(), user.getUser().getPhone(), timeStamp);
             } else
                 Log.d(TAG, "MINER_OUT_INDEX_VENDOR: " + w.getException());
 
@@ -213,25 +218,28 @@ public class Inner_notification extends AppCompatActivity {
     }
 
 
-    private void SEND_NOTIFICATION(Set<String> token_approved, String phone, GeoPoint geo_point, String img_url, String phone_no) {
+    private void SEND_NOTIFICATION(Set<String> token_approved, String user_id, String phone, GeoPoint geo_point, String img_url, String phone_no, Object timestamp) {
 
         for (String to : token_approved) {
 
             Map<String, Object> pay_load = new HashMap<>();
             pay_load.put("Vendor", "Vendor: " + user.getUser().getName());
             pay_load.put("Vendor_img_url", img_url);
-            pay_load.put("Vendor ID", FirebaseAuth.getInstance().getUid());
-            pay_load.put("Vendor Phone", phone);
+            pay_load.put("Vendor_ID", FirebaseAuth.getInstance().getUid());
+            pay_load.put("Client_ID", user_id);
+            pay_load.put("Vendor_Phone", phone);
             pay_load.put("Order_id", getIntent().getStringExtra("data_key"));
             pay_load.put("Order_items", list2.size());
-            pay_load.put("Vendor business_D", user.getUser().getBusiness_details());
+            pay_load.put("Vendor_business_D", user.getUser().getBusiness_details());
             pay_load.put("Pick_up_geo_point", user.getGeo_point());
             pay_load.put("Drop_off_geo_point", geo_point);
-            pay_load.put("Drop_off_phone_no", phone);
+            pay_load.put("Drop_off_phone_no", phone_no);
+            pay_load.put("Timestamp", timestamp);
+            pay_load.put("doc_id_Gen", getIntent().getStringExtra("docID"));
             Pusher.pushrequest push = new Pusher.pushrequest(pay_load, to);
             try {
                 Pusher.sendPush(push);
-                CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(FirebaseFirestore.getInstance().collection(getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(getIntent().getStringExtra("docs_key")).document("DOC").collection("OI").document(getIntent().getStringExtra("data_key")), 1);
+                CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(doc, 1);
             } catch (Exception ex) {
                 Log.d(TAG, "SEND_NOTIFICATION: " + ex.toString());
             }
