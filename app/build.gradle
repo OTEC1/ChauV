@@ -27,6 +27,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    lintOptions {
+
+        checkReleaseBuilds false
+
+    }
 }
 
 dependencies {
@@ -59,7 +65,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.4'
 
     // FirebaseUI for Firebase Realtime Database
-    implementation 'com.firebaseui:firebase-ui-database:7.2.0'
+    //implementation 'com.firebaseui:firebase-ui-database:7.2.0'
 
     // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:7.2.0'

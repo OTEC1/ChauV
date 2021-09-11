@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void NOTIFICATION_LISTER() {
+    public void NOTIFICATION_LISTER() {
         if (!Pushy.isRegistered(getApplicationContext()))
             new RegisterUser(this).execute();
         Pushy.listen(this);

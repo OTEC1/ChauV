@@ -77,11 +77,11 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
 
         holder.cardView.setOnClickListener(o -> {
-            Intent intent = new Intent(context, Inner_notification.class);
+            Intent intent = new Intent(o.getContext(), Inner_notification.class);
             intent.putExtra("data_key", items.get(position).get("cart_tracker").toString());
             intent.putExtra("docs_key", items.get(position).get("current_doc").toString());
             intent.putExtra("docID", items.get(position).get("docs_id").toString());
-            context.startActivity(intent);
+            o.getContext().startActivity(intent);
             if (!holder.mStatus.getText().equals("Seen"))
                 UPDATE_DOC(items.get(position).get("current_doc"), items.get(position).get("docs_id"), holder.mStatus.getContext(), Boolean.getBoolean("vstatus"));
         });

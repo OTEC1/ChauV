@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,6 +32,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.chauvendor.R;
+import com.example.chauvendor.Running_Service.Keep_alive;
+import com.example.chauvendor.Running_Service.RegisterUser;
 import com.example.chauvendor.util.User;
 import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
@@ -45,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import me.pushy.sdk.Pushy;
+
 import static com.example.chauvendor.constant.Constants.READ_STORAGE_PERMISSION_REQUEST_CODE;
 
 public class Login extends AppCompatActivity {
@@ -56,9 +61,11 @@ public class Login extends AppCompatActivity {
     private LocationManager locationManager;
     private FirebaseFirestore firebaseFirestore;
     private RelativeLayout home_screen;
+    private Keep_alive keep_alive;
+    private Intent intent;
 
     private boolean status;
-    private static final String TAG = "LoginActiviy";
+    private static final String TAG = "LoginActivity";
     private long back_pressed;
     private int Time_lapsed = 2000;
 
@@ -85,7 +92,7 @@ public class Login extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         home_screen = (RelativeLayout) findViewById(R.id.home_screen);
         firebaseFirestore = FirebaseFirestore.getInstance();
-
+            NOTIFICATION_LISTER();
         bull_eye();
 
         home_screen.setOnClickListener(s -> {
@@ -318,6 +325,43 @@ public class Login extends AppCompatActivity {
                 new utils().buildAlertMessageNoGps(this, 0, "Pls turn off GPRS to reset location, do you want to turn off?");
 
         }
+    }
+
+
+
+
+    public void NOTIFICATION_LISTER() {
+        if (!Pushy.isRegistered(getApplicationContext()))
+            new RegisterUser(this).execute();
+        Pushy.listen(this);
+        NOTIFICATION_LISTER_1();
+    }
+
+
+    private void NOTIFICATION_LISTER_1() {
+
+        keep_alive = new Keep_alive();
+        intent = new Intent(this, keep_alive.getClass());
+        if (!isServicerunning(keep_alive.getClass()))
+            startService(intent);
+
+        if (!Pushy.isRegistered(getApplicationContext()))
+            new RegisterUser(this).execute();
+        Pushy.listen(this);
+    }
+
+
+    private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (aClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.d(TAG, " Service Already Running");
+                return true;
+            }
+            Log.d(TAG, " Service Not Running");
+        }
+        return false;
     }
 
 }

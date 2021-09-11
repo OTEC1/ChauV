@@ -91,8 +91,6 @@ public class utils {
     public void message2(String s, Activity a) {
         View parentLayout = a.findViewById(android.R.id.content);
         Snackbar snack = Snackbar.make(parentLayout, s, Snackbar.LENGTH_LONG);
-        snack.getView().setPadding(0, 0, 0, 0);
-        snack.getView().setBackground(ContextCompat.getDrawable(a, R.drawable.contianer_snackbar));
         snack.show();
 
     }

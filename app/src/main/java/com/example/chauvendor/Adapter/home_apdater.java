@@ -30,6 +30,9 @@ public class home_apdater extends FirestoreRecyclerAdapter<Category, home_apdate
         holder.user_tag.setText("Category: "+model.getCategory());
         holder.item_name.setText("Dish: "+model.getFood_name());
         new utils().img_load(holder.poster_value.getContext(),model.getImg_url(),holder.progressBar,holder.poster_value);
+
+
+
         holder.poster_value.setOnClickListener(view -> {
             Bundle b = new Bundle();
 

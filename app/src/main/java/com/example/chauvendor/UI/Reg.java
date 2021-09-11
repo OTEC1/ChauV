@@ -1,6 +1,7 @@
 package com.example.chauvendor.UI;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -54,7 +55,10 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.File;
@@ -73,7 +77,7 @@ public class Reg extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<String> list;
     private Spinner spinner;
-    private ProgressBar mprogressBar;
+    private ProgressBar mprogressBar, cat;
 
 
     private UserLocation muserLocation;
@@ -82,8 +86,10 @@ public class Reg extends AppCompatActivity {
     private Uri imgUri;
 
 
-    private String string, p1="", p2="", p3="", img_url;
+    private String string, p1 = "", p2 = "", p3 = "", img_url;
     private static final String TAG = "RegisterActiviy";
+
+
     private boolean mLocationPermissionGranted = false;
     private boolean once = false, confirm = false;
 
@@ -94,8 +100,10 @@ public class Reg extends AppCompatActivity {
         mfirestore = FirebaseFirestore.getInstance();
         if (!mLocationPermissionGranted)
             checkMapServices();
-        if(mLocationPermissionGranted)
+        if (mLocationPermissionGranted) {
             getLast_know_Location(FirebaseAuth.getInstance().getUid(), 0);
+            drop_down_populate();
+        }
 
     }
 
@@ -122,10 +130,10 @@ public class Reg extends AppCompatActivity {
         button_reg = (Button) findViewById(R.id.btn_register);
         spinner = (Spinner) findViewById(R.id.vendor_category);
         mprogressBar = (ProgressBar) findViewById(R.id.progressBar);
+        cat = (ProgressBar) findViewById(R.id.category_spinner);
         button1 = (Button) findViewById(R.id.pic_selector);
 
         mfirestore = FirebaseFirestore.getInstance();
-        drop_down_populate();
 
 
         button_reg.setOnClickListener(view -> {
@@ -270,7 +278,7 @@ public class Reg extends AppCompatActivity {
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.app_name))
-                .setMessage("Pls turn on your GPRS, do you want to enable it ?")
+                .setMessage("Pls turn on your GPRS and internet also, do you want to enable it ?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -514,17 +522,16 @@ public class Reg extends AppCompatActivity {
 
 
     private void drop_down_populate() {
-        list = new ArrayList<>();
-        list.add("Vendor Category");
-        list.add("Swallow Vendor");
-        list.add("Noodles Vendor");
-        list.add("Rice Vendor");
-        list.add("Pap Vendor");
-        list.add("All");
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        arrayAdapter.setDropDownViewResource(R.layout.text_pad);
-        arrayAdapter.notifyDataSetChanged();
-        spinner.setAdapter(arrayAdapter);
+
+       //api responses
+
+
+
+//        list.add("All");
+//        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+//        arrayAdapter.setDropDownViewResource(R.layout.text_pad);
+//        arrayAdapter.notifyDataSetChanged();
+//        spinner.setAdapter(arrayAdapter);
     }
 
 
@@ -543,4 +550,6 @@ public class Reg extends AppCompatActivity {
 
     public void space(View view) {
     }
+
+
 }

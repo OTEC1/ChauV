@@ -239,14 +239,11 @@ public class Vendor_account extends AppCompatActivity {
         //message2("Final"+res+"  "+response);
         DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
         Vendor_uploads uploads = new Vendor_uploads(res, toString1, pic_key, string, FirebaseAuth.getInstance().getUid(), 0, 0, reference.getId(), 0);
-        reference.set(uploads).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    message2("Uploaded  successfully.. Pls wait image uploading..");
-                } else
-                    message2("Error " + task.getException());
-            }
+        reference.set(uploads).addOnCompleteListener(task -> {
+            if (task.isSuccessful())
+                message2("Uploaded  successfully.. Pls wait image uploading..");
+            else
+                message2("Error " + task.getException());
         });
 
     }

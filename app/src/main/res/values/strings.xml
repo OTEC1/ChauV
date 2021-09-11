@@ -33,6 +33,7 @@
     <string name="VENDOR">VENDOR</string>
     <string name="business_details">Business Details</string>
     <string name="USER_LOCATION">User Location</string>
+    <string name="CAT_UPLOADS">Category Uploads</string>
 
 
 </resources>
