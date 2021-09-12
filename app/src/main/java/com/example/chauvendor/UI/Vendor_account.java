@@ -38,6 +38,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chauvendor.R;
+import com.example.chauvendor.Retrofit_.Base_config;
+import com.example.chauvendor.Retrofit_.Calls;
 import com.example.chauvendor.model.Vendor_uploads;
 import com.example.chauvendor.util.Find;
 import com.example.chauvendor.util.UserLocation;
@@ -50,12 +52,20 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.chauvendor.constant.Constants.CHARGES;
 import static com.example.chauvendor.constant.Constants.IMG_URL;
@@ -64,7 +74,7 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 public class Vendor_account extends AppCompatActivity {
 
 
-    private ProgressBar progressBar, progressBar1, progressBar_img;
+    private ProgressBar progressBar, progressBar1, progressBar_img,cat;
     private BottomNavigationView bottomNavigationView;
     private Button pic_select, upload1, view_review;
     private EditText foodprice, foodname;
@@ -81,7 +91,8 @@ public class Vendor_account extends AppCompatActivity {
 
 
     private FirebaseFirestore mfirebaseFirestore;
-    private ArrayList arrayList;
+    private List arrayList;
+    private  List<Map<String, Object>> obj;
     private ArrayAdapter adapter1;
     private UserLocation user;
 
@@ -106,6 +117,7 @@ public class Vendor_account extends AppCompatActivity {
         phone = (TextView) findViewById(R.id.phone);
         business = (TextView) findViewById(R.id.business_details);
         progress = (TextView) findViewById(R.id.progress);
+        cat = (ProgressBar) findViewById(R.id.progressBar6);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, bundle);
 
@@ -194,7 +206,7 @@ public class Vendor_account extends AppCompatActivity {
         shopname.setText(" "+user.getUser().getName());
         phone.setText(" "+user.getUser().getPhone());
         business.setText(" "+user.getUser().getBusiness_details());
-        new utils().img_load(getApplicationContext(), IMG_URL + user.getUser().getImg_url(), progressBar_img, vendor_img);
+        new utils().img_load(getApplicationContext(), IMG_URL+user.getUser().getImg_url(), progressBar_img, vendor_img);
         progressBar1.setVisibility(View.GONE);
     }
 
@@ -337,26 +349,41 @@ public class Vendor_account extends AppCompatActivity {
 
 
     private void populate_drop_down() {
+        obj = new ArrayList<>();
         arrayList = new ArrayList<>();
-        arrayList.add("Indicate");
-        arrayList.add("Yam");
-        arrayList.add("Rice");
-        arrayList.add("Pap");
-        arrayList.add("Ewa");
-        arrayList.add("Ewka");
-        arrayList.add("Abacha");
-        arrayList.add("Noodle");
-        arrayList.add("Swallow");
-        arrayList.add("Tea and beard");
-        arrayList.add("Noodle and egg");
+        Calls calls = Base_config.getConnection().create(Calls.class);
+        Call<List<Map<String, Object>>> search = calls.getCat();
+        search.enqueue(new Callback<List<Map<String, Object>>>() {
+            @Override
+            public void onResponse(@NotNull Call<List<Map<String, Object>>> call, @NotNull Response<List<Map<String, Object>>> response) {
+                obj = response.body();
+                assert obj != null;
+                for (Map<String, Object> z : obj)
+                    arrayList.add(Objects.requireNonNull(z.get("category")).toString());
+                if (arrayList != null)
+                    pop_out(arrayList);
+            }
 
-        adapter1 = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, arrayList);
-        adapter1.setDropDownViewResource(R.layout.text_pad);
-        spinner.setAdapter(adapter1);
+            @Override
+            public void onFailure(Call<List<Map<String, Object>>> call, @NotNull Throwable t) {
+                Log.d(TAG, "onResponse: " + t);
+                message2(t.getLocalizedMessage());
+            }
+        });
+
+
 
     }
 
 
+    private void pop_out(List<String> list) {
+        Collections.reverse(list);
+        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+        adapter1.setDropDownViewResource(R.layout.text_pad);
+        adapter1.notifyDataSetChanged();
+        spinner.setAdapter(adapter1);
+        cat.setVisibility(View.GONE);
+    }
 
 
     private void message2(String s) {

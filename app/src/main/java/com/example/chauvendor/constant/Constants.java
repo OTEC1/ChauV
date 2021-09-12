@@ -17,10 +17,12 @@ public class Constants {
 
 
     public static String IMG_URL = "https://chau.s3.eu-west-3.amazonaws.com/";
+    public  static  String BASE_URL="https://us-central1-chau02-b4019.cloudfunctions.net/appCat/";
     public  static  String ADMIN_CHANNEL_ID="chauvendor_channel";
     public  static CharSequence CHANNEL_NAME = "Chauvendor Paid Orders Channel";
     public  static String NOTIFICATION_TITLE  = "Chauvendor";
     public static String REQUEST_KEY;
+
 
 
 

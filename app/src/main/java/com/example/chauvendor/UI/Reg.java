@@ -43,6 +43,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chauvendor.R;
+import com.example.chauvendor.Retrofit_.Base_config;
+import com.example.chauvendor.Retrofit_.Calls;
 import com.example.chauvendor.util.User;
 import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.Find;
@@ -61,10 +63,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.chauvendor.constant.Constants.*;
 
@@ -75,15 +86,16 @@ public class Reg extends AppCompatActivity {
     private EditText editText1, editText2, editText3, editText4, editText5, editText6;
     private Button button_reg, button1;
     private ArrayAdapter<String> arrayAdapter;
-    private ArrayList<String> list;
     private Spinner spinner;
     private ProgressBar mprogressBar, cat;
-
-
     private UserLocation muserLocation;
     private FirebaseFirestore mfirestore;
     private GeoPoint geoPoint;
     private Uri imgUri;
+
+
+    private List<String> list = new ArrayList();
+    private List<Map<String, Object>> obj = null;
 
 
     private String string, p1 = "", p2 = "", p3 = "", img_url;
@@ -102,7 +114,7 @@ public class Reg extends AppCompatActivity {
             checkMapServices();
         if (mLocationPermissionGranted) {
             getLast_know_Location(FirebaseAuth.getInstance().getUid(), 0);
-            drop_down_populate();
+
         }
 
     }
@@ -134,6 +146,7 @@ public class Reg extends AppCompatActivity {
         button1 = (Button) findViewById(R.id.pic_selector);
 
         mfirestore = FirebaseFirestore.getInstance();
+        drop_down_populate(new ArrayList(), TAG, this);
 
 
         button_reg.setOnClickListener(view -> {
@@ -278,7 +291,7 @@ public class Reg extends AppCompatActivity {
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.app_name))
-                .setMessage("Pls turn on your GPRS and internet also, do you want to enable it ?")
+                .setMessage("Pls turn on your GPRS and internet too reset location, do you want to enable it ?")
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
@@ -520,19 +533,11 @@ public class Reg extends AppCompatActivity {
         new utils().message2(ex.getLocalizedMessage(), this);
     }
 
-
-    private void drop_down_populate() {
-
-       //api responses
-
-
-
-//        list.add("All");
-//        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-//        arrayAdapter.setDropDownViewResource(R.layout.text_pad);
-//        arrayAdapter.notifyDataSetChanged();
-//        spinner.setAdapter(arrayAdapter);
+    private void message2(String localizedMessage) {
+        new utils().message2(localizedMessage, this);
     }
+
+
 
 
     private void hide_bar() {
@@ -549,6 +554,44 @@ public class Reg extends AppCompatActivity {
     }
 
     public void space(View view) {
+    }
+
+
+    public void drop_down_populate(ArrayList<String> list, String TAG, AppCompatActivity applicationContext) {
+        obj = new ArrayList<>();
+        Calls calls = Base_config.getConnection().create(Calls.class);
+        Call<List<Map<String, Object>>> search = calls.getCat();
+        search.enqueue(new Callback<List<Map<String, Object>>>() {
+            @Override
+            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+                obj = response.body();
+                assert obj != null;
+                for (Map<String, Object> z : obj)
+                    list.add(Objects.requireNonNull(z.get("category")).toString());
+                if (list != null)
+                    pop_out(list);
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<List<Map<String, Object>>> call, Throwable t) {
+                Log.d(TAG, "onResponse: " + t);
+                message2(t.getLocalizedMessage());
+            }
+        });
+
+
+    }
+
+
+
+
+    private void pop_out(List<String> list) {
+        Collections.reverse(list);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+        arrayAdapter.setDropDownViewResource(R.layout.text_pad);
+        arrayAdapter.notifyDataSetChanged();
+        spinner.setAdapter(arrayAdapter);
+        cat.setVisibility(View.GONE);
     }
 
 
