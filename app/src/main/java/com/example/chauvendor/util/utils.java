@@ -72,6 +72,9 @@ public class utils {
 
 
 
+    public  String Stringify(Object x){
+        return  String.valueOf(x);
+    }
 
 
     public SharedPreferences init(Context context) {

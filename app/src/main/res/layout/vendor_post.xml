@@ -85,7 +85,7 @@
 
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/view_post"
+                android:id="@+id/view_review"
                 android:layout_width="wrap_content"
                 android:layout_height="43dp"
                 android:layout_marginRight="10dp"
@@ -94,7 +94,7 @@
                 android:layout_marginTop="37dp"
                 android:background="@android:color/transparent"
                 android:gravity="end"
-                android:text="View Comment"
+                android:text="View reviews"
                 android:textAlignment="viewEnd"
                 android:textAllCaps="false"
                 android:layout_marginEnd="10dp"

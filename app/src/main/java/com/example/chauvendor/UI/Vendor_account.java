@@ -74,12 +74,12 @@ import static com.example.chauvendor.constant.Constants.PICK_IMAGE;
 public class Vendor_account extends AppCompatActivity {
 
 
-    private ProgressBar progressBar, progressBar1, progressBar_img,cat;
+    private ProgressBar progressBar, progressBar1, progressBar_img, cat;
     private BottomNavigationView bottomNavigationView;
     private Button pic_select, upload1, view_review;
     private EditText foodprice, foodname;
     private CircleImageView vendor_img;
-    private TextView shopname, progress,phone, business;
+    private TextView shopname, progress, phone, business;
     private Bundle bundle = new Bundle();
     private ImageView image_view;
     private Spinner spinner;
@@ -87,12 +87,12 @@ public class Vendor_account extends AppCompatActivity {
 
 
     private boolean confirm = false;
-    private String string = "Indicate", p1, p2, p3, pic_key, TAG = "accountFragment";
+    private String string = "Indicate", pic_key, TAG = "accountFragment";
 
 
     private FirebaseFirestore mfirebaseFirestore;
     private List arrayList;
-    private  List<Map<String, Object>> obj;
+    private List<Map<String, Object>> obj;
     private ArrayAdapter adapter1;
     private UserLocation user;
 
@@ -122,28 +122,20 @@ public class Vendor_account extends AppCompatActivity {
         new utils().bottom_nav(bottomNavigationView, this, bundle);
 
 
-
         if (Build.VERSION.SDK_INT >= 21) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(this.getResources().getColor(R.color.account_top_section));
         }
-       // View view =getSupportActionBar().getCustomView();
+        // View view =getSupportActionBar().getCustomView();
 
         if (FirebaseAuth.getInstance().getUid() != null)
             current_vendor();
 
         populate_drop_down();
 
-
-        pic_select.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                file_picker(view);
-            }
-        });
-
+        pic_select.setOnClickListener(this::file_picker);
 
         if (CHARGES == null)
             new utils().quick_commission_call(TAG);
@@ -162,55 +154,53 @@ public class Vendor_account extends AppCompatActivity {
         });
 
 
-        upload1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        upload1.setOnClickListener(view -> {
 
 
-                if (FirebaseAuth.getInstance().getUid() == null)
-                    message2("Pls Sign in.");
-                else if (string.equals("Indicate"))
-                    message2("Pls indicate section to upload");
-                else if (CHARGES == null) {
-                    new utils().quick_commission_call(TAG);
-                    message2("Snap yr connection seems Poor !");
-                } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
+            if (FirebaseAuth.getInstance().getUid() == null)
+                message2("Pls Sign in.");
+            else if (string.equals("Indicate"))
+                message2("Pls indicate section to upload");
+            else if (CHARGES == null) {
+                new utils().quick_commission_call(TAG);
+                message2("Snap yr connection seems Poor !");
+            } else if (foodprice.getText().toString().length() <= 0 | foodname.getText().toString().length() <= 0) {
+                hide_progress();
+                message2("Pls fill out both fields");
+            } else if (!confirm) {
+                hide_progress();
+                message2("Pls select Food Picture");
+            } else if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0) {
+                pic_key = getFile_extension(imgUri);
+                if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
+                    show_progress();
+                    String in = generate_name().concat(".png");
+                    send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in);
+                    credentials(in);
+                } else {
+                    message2("Pls select a valid Image file");
                     hide_progress();
-                    message2("Pls fill out both fields");
-                } else if (!confirm) {
-                    hide_progress();
-                    message2("Pls select Food Picture");
-                } else if (confirm && foodprice.getText().toString().length() > 0 && foodname.getText().toString().length() > 0) {
-                    pic_key = getFile_extension(imgUri);
-                    if (pic_key.equalsIgnoreCase("png") | pic_key.equalsIgnoreCase("jpg") | pic_key.equalsIgnoreCase("jpeg") | pic_key.equalsIgnoreCase("webp")) {
-                        show_progress();
-                        String in = generate_name().concat(".png");
-                        send_data_to_firebase(foodprice.getText().toString(), foodname.getText().toString(), in);
-                        credentials(in);
-                    } else {
-                        message2("Pls select a valid Image file");
-                        hide_progress();
-                    }
                 }
             }
+        });
+
+
+        view_review.setOnClickListener(h -> {
+            new utils().openFragment(new home(), this, new Bundle());
         });
 
     }
 
 
-
-
     private void current_vendor() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
-        shopname.setText(" "+user.getUser().getName());
-        phone.setText(" "+user.getUser().getPhone());
-        business.setText(" "+user.getUser().getBusiness_details());
-        new utils().img_load(getApplicationContext(), IMG_URL+user.getUser().getImg_url(), progressBar_img, vendor_img);
+        shopname.setText(" " + user.getUser().getName());
+        phone.setText(" " + user.getUser().getPhone());
+        business.setText(" " + user.getUser().getBusiness_details());
+        new utils().img_load(getApplicationContext(), IMG_URL + user.getUser().getImg_url(), progressBar_img, vendor_img);
         progressBar1.setVisibility(View.GONE);
     }
-
-
 
 
     //Step 5
@@ -220,14 +210,9 @@ public class Vendor_account extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    p1 = task.getResult().getString("p1");
-                    p2 = task.getResult().getString("p2");
-                    p3 = task.getResult().getString("p3");
-                    //System.out.println(id + " " + p1 + "  " + p2 + "  " + p3);
-
                     try {
-                        if (p1.length() > 0 && p2.length() > 0 && p3.length() > 0)
-                            send_data_to_s3(imgUri, m, p1, p2, p3);
+                        if (task.getResult().getString("p1").length() > 0 && task.getResult().getString("p2").length() > 0 && task.getResult().getString("p3").length() > 0)
+                            send_data_to_s3(imgUri, m, task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
                     } catch (URISyntaxException e) {
                         message2(e.toString());
                         Log.d(TAG, e.toString());
@@ -238,10 +223,6 @@ public class Vendor_account extends AppCompatActivity {
             }
         });
     }
-
-
-
-
 
 
     //Firebase
@@ -259,9 +240,6 @@ public class Vendor_account extends AppCompatActivity {
         });
 
     }
-
-
-
 
 
     //S3
@@ -370,7 +348,6 @@ public class Vendor_account extends AppCompatActivity {
                 message2(t.getLocalizedMessage());
             }
         });
-
 
 
     }

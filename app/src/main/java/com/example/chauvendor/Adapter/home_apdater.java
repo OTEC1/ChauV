@@ -1,5 +1,6 @@
 package com.example.chauvendor.Adapter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chauvendor.R;
+import com.example.chauvendor.UI.Reviews;
 import com.example.chauvendor.model.Category;
 import com.example.chauvendor.util.utils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class home_apdater extends FirestoreRecyclerAdapter<Category, home_apdater.MyHolder> {
 
@@ -39,6 +42,11 @@ public class home_apdater extends FirestoreRecyclerAdapter<Category, home_apdate
         });
 
 
+        holder.views.setOnClickListener(k->{
+            k.getContext().startActivity(new Intent(k.getContext(), Reviews.class).putExtra("data",model.getDoc()));
+        });
+
+
     }
 
 
@@ -52,7 +60,7 @@ public class home_apdater extends FirestoreRecyclerAdapter<Category, home_apdate
 
     class MyHolder extends RecyclerView.ViewHolder {
         private CircleImageView poster_value;
-        private TextView user_tag,item_name;
+        private TextView user_tag,item_name,views;
         private ProgressBar progressBar;
 
         public MyHolder(View view) {
@@ -60,6 +68,7 @@ public class home_apdater extends FirestoreRecyclerAdapter<Category, home_apdate
             poster_value = (CircleImageView) view.findViewById(R.id.cat_img);
             user_tag = (TextView) view.findViewById(R.id.cat_name);
             item_name = (TextView) view.findViewById(R.id.item_name);
+            views = (TextView) view.findViewById(R.id.view_review);
             progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         }

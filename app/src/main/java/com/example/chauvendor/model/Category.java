@@ -5,7 +5,7 @@ import static com.example.chauvendor.constant.Constants.*;
 
 public class Category {
 
-    private String img_url,category,food_name;
+    private String img_url,category,food_name,doc;
 
     public Category() {
     }
@@ -19,11 +19,10 @@ public class Category {
         return food_name;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getImg_url() { return IMG_URL+img_url; }
 
-    public void setImg_url(String img_url) { this.img_url = img_url; }
+    public String getDoc() {
+        return doc;
+    }
+
 }
