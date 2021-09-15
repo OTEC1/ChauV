@@ -86,7 +86,7 @@ public class Vendor_account extends AppCompatActivity {
     private Uri imgUri;
 
 
-    private boolean confirm = false;
+    private boolean confirm = false, started_payload = false;
     private String string = "Indicate", pic_key, TAG = "accountFragment";
 
 
@@ -159,8 +159,8 @@ public class Vendor_account extends AppCompatActivity {
 
             if (FirebaseAuth.getInstance().getUid() == null)
                 message2("Pls Sign in.");
-            else if (string.equals("Indicate"))
-                message2("Pls indicate section to upload");
+            else if (string.equals("Choose category"))
+                message2("Pls indicate which category to upload");
             else if (CHARGES == null) {
                 new utils().quick_commission_call(TAG);
                 message2("Snap yr connection seems Poor !");
@@ -227,7 +227,7 @@ public class Vendor_account extends AppCompatActivity {
 
     //Firebase
     private void send_data_to_firebase(String price, String toString1, String pic_key) {
-
+        started_payload = true;
         int res = Integer.parseInt(CHARGES.toString()) + Integer.parseInt(price);
         //message2("Final"+res+"  "+response);
         DocumentReference reference = mfirebaseFirestore.collection(getString(R.string.vendor_uploads)).document("room").collection(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()).document();
@@ -271,6 +271,7 @@ public class Vendor_account extends AppCompatActivity {
                     foodname.setText("");
                     foodprice.setText("");
                     image_view.setImageResource(R.drawable.plain);
+                    started_payload = false;
                 }
 
 
@@ -307,6 +308,7 @@ public class Vendor_account extends AppCompatActivity {
             if (imgUri.toString().contains("image")) {
                 image_view.setImageURI(imgUri);
                 confirm = true;
+                progress.setText("");
             } else
                 message2("Pls Select an Image.");
         }
@@ -362,6 +364,14 @@ public class Vendor_account extends AppCompatActivity {
         cat.setVisibility(View.GONE);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        if (started_payload)
+            new utils().message2("Pls wait Upload in progress", this);
+        else
+            super.onBackPressed();
+    }
 
     private void message2(String s) {
         new utils().message2(s, this);

@@ -6,21 +6,27 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.example.chauvendor.Adapter.home_apdater;
 import com.example.chauvendor.R;
-import com.example.chauvendor.model.Category;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class home extends Fragment {
 
@@ -31,20 +37,9 @@ public class home extends Fragment {
     private FrameLayout realLayout;
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (FirebaseAuth.getInstance().getUid() != null)
-            adapter.startListening();
-    }
+    private List<Map<String, Object>> options;
+    private  String TAG = "home";
 
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (adapter != null)
-            adapter.stopListening();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,19 +53,38 @@ public class home extends Fragment {
         });
         if (FirebaseAuth.getInstance().getUid() != null)
             api_call2();
+
         return view;
     }
 
 
     private void api_call2() {
-        Query query = reference = FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid());
-        FirestoreRecyclerOptions<Category> options = new FirestoreRecyclerOptions.Builder<Category>().setQuery(query, Category.class).build();
-        set_layout(options);
+        options = new ArrayList<>();
+        FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room")
+                .collection(FirebaseAuth.getInstance().getUid())
+                .get().addOnCompleteListener(u -> {
+            if (u.isSuccessful()) {
+                List<DocumentSnapshot> s = u.getResult().getDocuments();
+                for (DocumentSnapshot z : s) {
+                    Map<String, Object> o = new HashMap<>();
+                    o.put("category", z.get("category"));
+                    o.put("food_price", z.get("food_price"));
+                    o.put("food_name", z.get("food_name"));
+                    o.put("doc", z.get("doc"));
+                    o.put("img_url", z.get("img_url"));
+                    options.add(o);
+                    set_layout(options);
+                }
+            }
+            else
+                Log.d(TAG, "api_call2:  Error Occurred "+u.getException());
+        });
+
     }
 
-    private void set_layout(FirestoreRecyclerOptions<Category> options) {
+    private void set_layout(List<Map<String, Object>> options) {
         LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        adapter = new home_apdater(options);
+        adapter = new home_apdater(options,getContext());
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
         progressBar.setVisibility(View.GONE);

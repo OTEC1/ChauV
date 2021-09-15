@@ -84,7 +84,7 @@ public class Inner_notification extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             api_call1(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)));
 
-        Log.d(TAG, "onCreate: "+getIntent().getStringExtra("docID"));
+        Log.d(TAG, "onCreate: " + getIntent().getStringExtra("docID"));
 
         doc = FirebaseFirestore.getInstance().collection(getString(R.string.Paid_Vendors_Brand_Section))
                 .document("Orders")
@@ -160,7 +160,7 @@ public class Inner_notification extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
-        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).get().addOnCompleteListener(i -> {
+        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).whereLessThan("bad", 10).get().addOnCompleteListener(i -> {
             if (i.isSuccessful()) {
                 List<UserLocation> u = i.getResult().toObjects(UserLocation.class);
                 for (UserLocation x : u) {
