@@ -27,7 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChauVendor">
-        <activity android:name=".UI.Reviews"></activity>
+        <activity android:name=".UI.Issues_submit"></activity>
+        <activity android:name=".UI.Reviews" />
         <activity android:name=".UI.Inner_notification" />
         <activity android:name=".UI.Vendor_account" />
         <activity android:name=".UI.Main_notification" />

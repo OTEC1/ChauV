@@ -22,6 +22,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.example.chauvendor.R;
+import com.example.chauvendor.constant.Constants;
 import com.example.chauvendor.util.utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,7 +46,7 @@ public class Edit_post extends Fragment {
 
     private EditText prices, food_name;
     private ImageView imageView;
-    private ProgressBar progressBar2,progressBar4;
+    private ProgressBar progressBar2, mprogressBar4;
     private Button delete, update;
 
 
@@ -62,7 +63,7 @@ public class Edit_post extends Fragment {
         update = (Button) view.findViewById(R.id.post_update);
         imageView = (ImageView) view.findViewById(R.id.img_urls);
         progressBar2 = (ProgressBar) view.findViewById(R.id.progressBar2);
-        progressBar4 = (ProgressBar) view.findViewById(R.id.progressBar4);
+        mprogressBar4 = (ProgressBar) view.findViewById(R.id.bastard_variable);
 
 
         assert getArguments() != null;
@@ -73,16 +74,19 @@ public class Edit_post extends Fragment {
             prices.setText(x[2]);
             img = x[3];
             if (!img.trim().isEmpty())
-                new utils().img_load(getContext(), img, progressBar2, imageView);
+                new utils().img_load(getContext(), Constants.IMG_URL + img, progressBar2, imageView);
         }
 
 
         update.setOnClickListener(q -> {
+            mprogressBar4.setVisibility(View.VISIBLE);
             if (!prices.getText().toString().trim().isEmpty() && !food_name.getText().toString().trim().isEmpty())
                 FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs)
                         .update(MAP()).addOnCompleteListener(h -> {
-                    if (h.isSuccessful())
+                    if (h.isSuccessful()) {
                         new utils().message2("Updated successfully ", requireActivity());
+                        mprogressBar4.setVisibility(View.INVISIBLE);
+                    }
                     else
                         new utils().message2("error occurred " + h.getException(), requireActivity());
                 });
@@ -93,6 +97,7 @@ public class Edit_post extends Fragment {
 
 
         delete.setOnClickListener(h -> {
+            mprogressBar4.setVisibility(View.VISIBLE);
             FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs)
                     .delete().addOnCompleteListener(a -> {
                 if (a.isSuccessful())
@@ -108,7 +113,6 @@ public class Edit_post extends Fragment {
     }
 
     private void Drop_reviews() {
-        progressBar4.setVisibility(View.VISIBLE);
         FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs).collection("reviews")
                 .get().addOnCompleteListener(b -> {
             if (b.isSuccessful()) {
@@ -116,12 +120,14 @@ public class Edit_post extends Fragment {
                 for (DocumentSnapshot s : oj) {
                     FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(s.getId())
                             .delete().addOnCompleteListener(a -> {
-                        if (a.isSuccessful())
+                        if (a.isSuccessful()) {
                             Log.d(TAG, " Deleted ");
+                            credentials();
+                        }
                         else
                             Log.d(TAG, "Error occurred " + a.getException());
 
-                        progressBar4.setVisibility(View.INVISIBLE);
+                        mprogressBar4.setVisibility(View.INVISIBLE);
                     });
                 }
             } else
@@ -129,28 +135,23 @@ public class Edit_post extends Fragment {
 
         });
 
-       credentials();
+
     }
-
-
-
-
-
 
 
     private void credentials() {
         FirebaseFirestore.getInstance().collection("east").document("lab")
-        .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     try {
                         if (Objects.requireNonNull(task.getResult().getString("p1")).length() > 0 && Objects.requireNonNull(task.getResult().getString("p2")).length() > 0 && Objects.requireNonNull(task.getResult().getString("p3")).length() > 0)
-                          S3_drop(task.getResult().getString("p1"),task.getResult().getString("p2"),task.getResult().getString("p3"));
+                            S3_drop(task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
                     } catch (Exception e) {
-                      new utils().message2(e.toString(), requireActivity());
+                        new utils().message2(e.toString(), requireActivity());
                         Log.d(TAG, e.toString());
-                       progressBar4.setVisibility(View.INVISIBLE);
+                        mprogressBar4.setVisibility(View.INVISIBLE);
                     }
 
                 }
@@ -165,17 +166,21 @@ public class Edit_post extends Fragment {
         AmazonS3 s3 = new AmazonS3Client(credentials);
         java.security.Security.setProperty("networkaddress.cache.ttl", "60");
         s3.setRegion(Region.getRegion(Regions.EU_WEST_3));
-        s3.doesObjectExist(p3,img.substring(img.lastIndexOf("/") + 1));
-        s3.deleteObject(p3,img.substring(img.lastIndexOf("/") + 1));
-        startActivity(new Intent(getContext(), MainActivity.class));
-
-        Log.d(TAG, "S3_drop: " + img.substring(img.lastIndexOf("/") + 1) + "   " + img);
+        if (s3.doesObjectExist(p3, img.substring(img.lastIndexOf("/") + 1))) {
+            s3.deleteObject(p3, img.substring(img.lastIndexOf("/") + 1));
+            startActivity(new Intent(getContext(), MainActivity.class));
+        }else
+            new utils().message2("File Doesn't exist", requireActivity());
     }
 
     private Map<String, Object> MAP() {
         Map<String, Object> o = new HashMap<>();
         o.put("food_name", food_name.getText().toString());
-        o.put("food_price", prices.getText().toString());
+        o.put("food_price", Long.valueOf(prices.getText().toString()));
         return o;
     }
+
+
+
+
 }

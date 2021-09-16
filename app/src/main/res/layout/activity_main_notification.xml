@@ -29,16 +29,19 @@
         </RelativeLayout>
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/main_recycler_view"
+        <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="match_parent"
             android:layout_height="0sp"
-            android:layout_weight="82"
-            android:background="@color/White" />
+            android:layout_weight="82">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/White" />
 
-
-
+        </FrameLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"

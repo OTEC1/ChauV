@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/chau_vendor"
     tools:context=".UI.Edit_post">
 
 
@@ -18,17 +19,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="100">
-
-            <ProgressBar
-                android:id="@+id/progressBar4"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="150dp"
-                android:theme="@style/AppTheme.primary"
-                android:visibility="invisible" />
 
 
             <LinearLayout
@@ -60,6 +50,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:theme="@style/AppTheme.primary" />
+
 
                 </androidx.cardview.widget.CardView>
 
@@ -121,6 +112,18 @@
                 </RelativeLayout>
 
             </LinearLayout>
+
+
+            <ProgressBar
+                android:id="@+id/bastard_variable"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="60dp"
+                android:theme="@style/AppTheme.primary"
+                android:visibility="invisible" />
 
 
         </RelativeLayout>

@@ -1,7 +1,6 @@
 package com.example.chauvendor.UI;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -15,14 +14,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.os.StrictMode;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,16 +31,13 @@ import com.example.chauvendor.R;
 import com.example.chauvendor.Running_Service.Keep_alive;
 import com.example.chauvendor.Running_Service.RegisterUser;
 import com.example.chauvendor.util.User;
-import com.example.chauvendor.util.UserLocation;
 import com.example.chauvendor.util.utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -92,7 +85,7 @@ public class Login extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         home_screen = (RelativeLayout) findViewById(R.id.home_screen);
         firebaseFirestore = FirebaseFirestore.getInstance();
-            NOTIFICATION_LISTER();
+        NOTIFICATION_LISTER();
         bull_eye();
 
         home_screen.setOnClickListener(s -> {
@@ -111,13 +104,14 @@ public class Login extends AppCompatActivity {
     }
 
 
+    //Step 1
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void signIn() {
         progressBar.setVisibility(View.VISIBLE);
         FirebaseAuth.getInstance().signInWithEmailAndPassword(editText.getText().toString(), editText1.getText().toString())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful())
-                        QUICK_DOC_REF();
+                        QUICK_UPDATE();
                     else
                         message("Failed " + task.getException());
                 }).addOnFailureListener(e -> {
@@ -129,58 +123,171 @@ public class Login extends AppCompatActivity {
     }
 
 
-    private void message(String a) {
-        new utils().message(a, this);
-
-    }
-
-
+    //Step 2
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void QUICK_DOC_REF() {
+    private Map<String, Object> QUICK_UPDATE() {
+
         Map<String, Object> i = new HashMap<>();
         i.put("token", new utils().init(getApplicationContext()).getString(getString(R.string.DEVICE_TOKEN), ""));
         RE_USE(0, i, Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
 
+        return i;
 
     }
 
 
+    //Step 3
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void FINAL_DOC_REF() {
         //Already installation
         if (new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null) != null) {
             //Another user sign in on device
-            if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))) {
-                Map<String, Object> i = new HashMap<>();
-                i.put("token", "");
-                RE_USE(1, i, new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null));
-                //Same user sign in again
-            } else
+            if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null)))
+                UPDATE_REGISTRATION_SECTION();
+            else
+                //Another user sign in
                 NAVIGATE_USER();
-            //First time installation
         } else
+            //First time installation
             NAVIGATE_USER();
 
     }
 
 
-    private void NAVIGATE_USER() {
-        new utils().VENDOR_LOCATION_QUERY(progressBar, this, editText);
+    //Step 4
+    private void UPDATE_REGISTRATION_SECTION() {
+        FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_reg)).document(new utils().init(getApplicationContext())
+                .getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))
+                .update(MAP()).addOnCompleteListener(u -> {
+            if (u.isSuccessful())
+                NAVIGATE_USER();
+            else {
+                new utils().message("Registration section  not Updated", this);
+                progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "RE_USE: " + u.getException());
+            }
+
+
+        });
+
     }
 
 
+    //Step 5
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void UPDATE_LOCATION_SECTION(User user) {
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null) != null)
+            if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))) {
+                FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc))
+                        .document(new utils().init(getApplicationContext())
+                                .getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))
+                        .update("user", MAP_USER(user, 0)).addOnCompleteListener(u -> {
+                    if (u.isSuccessful())
+                        RE_USE(1, MAP(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null));
+                    else {
+                        new utils().message("Location section not Updated", this);
+                        progressBar.setVisibility(View.GONE);
+                        Log.d(TAG, "RE_USE: " + u.getException());
+                    }
+
+                });
+            } else
+                NAVIGATE_USER();
+        else NAVIGATE_USER();
+    }
+
+
+    //Step 6
+    private Map<String, Object> MAP() {
+        Map<String, Object> i = new HashMap<>();
+        i.put("token", "");
+        return i;
+    }
+
+
+    //Step 6b
+    private Object MAP_USER(User user, int y) {
+        Map<String, Object> i = new HashMap<>();
+        Log.d(TAG, "MAP_USER: " + user.getApp_user());
+        i.put("app_user", user.getApp_user());
+        i.put("bad", user.getBad());
+        i.put("business_details", user.getBusiness_details());
+        i.put("email", user.getEmail());
+        i.put("fair", user.getFair());
+        i.put("good", user.getGood());
+        i.put("img_url", user.getImg_url());
+        i.put("member_T", user.getMember_T());
+        i.put("name", user.getName());
+        i.put("phone", user.getPhone());
+
+        if (y == 0)
+            i.put("token", "");
+        else
+            i.put("token", user.getToken());
+
+        i.put("user_id", user.getUser_id());
+        i.put("username", user.getUsername());
+        return i;
+    }
+
+
+    //Step 7
+    private void NAVIGATE_USER() {
+
+        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid())
+                .get().addOnCompleteListener(u -> {
+            if (u.isSuccessful()) {
+                User user = u.getResult().toObject(User.class);
+                UPDATE_VENDOR_LOCATIONS(user);
+            } else {
+                new utils().message("Error getting  user details", this);
+                progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "RE_USE: " + u.getException());
+            }
+
+        });
+
+
+    }
+
+
+    //Step 9
+    private void UPDATE_VENDOR_LOCATIONS(User user) {
+        FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid())
+                .update("user", MAP_USER(user, 1)).addOnCompleteListener(u -> {
+            if (u.isSuccessful())
+                new utils().VENDOR_LOCATION_QUERY(progressBar, this, editText);
+            else {
+                new utils().message("Error updating  user location", this);
+                progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "RE_USE: " + u.getException());
+            }
+        });
+
+    }
+
+
+    //Step final
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void RE_USE(int i, Map<String, Object> s, String doc_id) {
-        DocumentReference documentReference = firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id);
-        documentReference.update(s).addOnCompleteListener(task -> {
+        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id)
+                .update(s).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (i != 1)
+                if (i != 1) {
+                    firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null)).get()
+                            .addOnCompleteListener(d -> {
+                                if (d.isSuccessful()) {
+                                    User user = d.getResult().toObject(User.class);
+                                    UPDATE_LOCATION_SECTION(user);
+                                    Log.d(TAG, "RE_USE: " + user);
+                                }
+                            });
+                } else
                     FINAL_DOC_REF();
-                NAVIGATE_USER();
             } else {
                 new utils().message("Account not Registered", this);
                 progressBar.setVisibility(View.GONE);
-                System.out.println(task.getException());
+                Log.d(TAG, "RE_USE: " + task.getException());
             }
 
         });
@@ -328,8 +435,6 @@ public class Login extends AppCompatActivity {
     }
 
 
-
-
     public void NOTIFICATION_LISTER() {
         if (!Pushy.isRegistered(getApplicationContext()))
             new RegisterUser(this).execute();
@@ -364,4 +469,9 @@ public class Login extends AppCompatActivity {
         return false;
     }
 
+
+    private void message(String a) {
+        new utils().message(a, this);
+
+    }
 }

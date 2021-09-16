@@ -3,15 +3,12 @@
 
     <item
         android:id="@+id/search"
-        android:title="Search"
-        android:onClick="search"/>
+        android:title="Search" />
 
     <item
-        android:id="@+id/homes"
-        android:title="Sign in"
-        android:onClick="signin"/>
+        android:id="@+id/sign_in"
+        android:title="Sign in" />
     <item
-        android:id="@+id/carts"
-        android:onClick="signout"
-        android:title="Sign out"/>
+        android:id="@+id/sign_out"
+        android:title="Sign out" />
 </menu>

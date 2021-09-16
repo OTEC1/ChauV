@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             if (CHARGES == null)
                 new utils().quick_commission_call(TAG);
             new utils().api_call_to_cache(getApplicationContext(), new ArrayList<>(), getString(R.string.CACHE_LIST_OF_VENDORS), 1);
+            new utils().openFragment(new home(), this, bundle);
         }
     }
 
@@ -92,8 +93,7 @@ public class MainActivity extends AppCompatActivity {
             bundle.putString("UI_to_display", "2");
             decide = new utils().bottom_nav(bottomNav, this, bundle);
             new utils().quick_commission_call(TAG);
-            if (FirebaseAuth.getInstance().getUid() != null)
-                new utils().openFragment(new home(), this, bundle);
+            new utils().openFragment(new home(), this, bundle);
         }
 
 
@@ -210,11 +210,11 @@ public class MainActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
-
             back_pressed = System.currentTimeMillis();
             free_memory();
         } else
             super.onBackPressed();
+
     }
 
 
@@ -224,47 +224,8 @@ public class MainActivity extends AppCompatActivity {
             fm.popBackStack();
         }
     }
+    //----------------------------------------------onBackPressed ---------------------------------------------//
 
-
-    public void showPopup(View view) {
-        PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.signuser, popup.getMenu());
-        popup.show();
-    }
-
-
-    public void signin(MenuItem item) {
-        if (FirebaseAuth.getInstance().getUid() == null)
-            startActivity(new Intent(this, Login.class).putExtra("check_view", String.valueOf(2)));
-        else
-            new utils().message2("Pls Sign out ", this);
-    }
-
-
-    public void signout(MenuItem item) {
-        if (FirebaseAuth.getInstance().getUid() != null)
-            UPDATE_DEVICE();
-        else
-            new utils().message2("Already Signed Out", this);
-
-    }
-
-
-    private void UPDATE_DEVICE() {
-        new utils().message2(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail() + " Signed Out", this);
-        new utils().init(getApplicationContext()).edit().putString(getString(R.string.LAST_SIGN_IN_VENDOR), FirebaseAuth.getInstance().getUid()).apply();
-        new utils().CACHE_VENDOR(null, getApplicationContext(), 0, getString(R.string.VENDOR));
-        FirebaseAuth.getInstance().signOut();
-    }
-
-
-    public void search(MenuItem item) {
-        decide = false;
-        bundle = new Bundle();
-        bundle.putString("ID", "S");
-        new utils().openFragment(new Search(), this, bundle);
-    }
 
 
     public void space(View view) {

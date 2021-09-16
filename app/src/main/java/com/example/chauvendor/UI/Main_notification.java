@@ -55,7 +55,7 @@ public class Main_notification extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(getApplicationContext(), Main_notification.class));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         super.onBackPressed();
     }
 

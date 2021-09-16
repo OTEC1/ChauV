@@ -160,20 +160,27 @@ public class Inner_notification extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             user = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR));
-        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).whereLessThan("bad", 10).get().addOnCompleteListener(i -> {
+        FirebaseFirestore.getInstance().collection(getString(R.string.DELIVERY_LOCATION)).get().addOnCompleteListener(i -> {
             if (i.isSuccessful()) {
                 List<UserLocation> u = i.getResult().toObjects(UserLocation.class);
                 for (UserLocation x : u) {
-                    if (token_gotten.size() != 10) {
+                    if (x.getUser().getBad() < 11) {
+                        Log.d(TAG, "PASS_ON: " + x.getUser().getName());
                         token_gotten = CHECK_FOR_NEARBY_DELIVERIES_RADIUS(x.getGeo_point().getLatitude(), x.getGeo_point().getLongitude(), Double.toHexString(user.getGeo_point().getLatitude()), Double.toHexString(user.getGeo_point().getLongitude()), x.getUser().getToken());
+                        Log.d(TAG, "PASS_ON: " + token_gotten);
+                        assert token_gotten != null;
+                        if (token_gotten.size() <= 10)
+                            break;
                     }
                 }
+
 
                 if (token_gotten != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                         token_gotten.forEach(x -> token_approved = new HashSet<>(token_gotten));
                     MINER_OUT_INDEX_VENDOR(current_vendor_index, timeStamp);
                 }
+
             } else
                 new utils().message2("Error Getting " + i.getException(), this);
 
@@ -213,13 +220,16 @@ public class Inner_notification extends AppCompatActivity {
             if (vendor_location < 3000)
                 list.add(m);
 
+            Log.d(TAG, "CHECK_FOR_NEARBY_DELIVERIES_RADIUS: checked ");
+
         }
-        return list;
+        return (list.size() > 0) ? list : null;
     }
 
 
     private void SEND_NOTIFICATION(Set<String> token_approved, String user_id, String phone, GeoPoint geo_point, String img_url, String phone_no, Object timestamp) {
 
+        Log.d(TAG, "SEND_NOTIFICATION: " + token_approved + "  " + user_id + "  " + phone + "  " + geo_point + "  " + img_url + "  " + phone_no + "  " + timestamp);
         for (String to : token_approved) {
 
             Map<String, Object> pay_load = new HashMap<>();
