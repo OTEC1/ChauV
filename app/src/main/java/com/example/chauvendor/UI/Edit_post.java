@@ -51,12 +51,13 @@ public class Edit_post extends Fragment {
 
 
     private String docs, img = "", TAG = "Edit_post";
+    private long worked_on_price = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_post, container, false);
 
-
+        new utils().quick_commission_call(TAG);
         prices = (EditText) view.findViewById(R.id.prices);
         food_name = (EditText) view.findViewById(R.id.food_name);
         delete = (Button) view.findViewById(R.id.delete);
@@ -79,30 +80,24 @@ public class Edit_post extends Fragment {
 
 
         update.setOnClickListener(q -> {
-            mprogressBar4.setVisibility(View.VISIBLE);
-            if (!prices.getText().toString().trim().isEmpty() && !food_name.getText().toString().trim().isEmpty())
-                FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs)
-                        .update(MAP()).addOnCompleteListener(h -> {
-                    if (h.isSuccessful()) {
-                        new utils().message2("Updated successfully ", requireActivity());
-                        mprogressBar4.setVisibility(View.INVISIBLE);
-                    }
-                    else
-                        new utils().message2("error occurred " + h.getException(), requireActivity());
-                });
-            else
-                new utils().message2("Pls fill out both field !", requireActivity());
+            if (Constants.CHARGES != null)
+                UDPATE(Constants.CHARGES.toString());
+            else {
+                new utils().quick_commission_call(TAG);
+                new utils().message2("Request failed pls try again", requireActivity());
+            }
+
 
         });
 
 
         delete.setOnClickListener(h -> {
             mprogressBar4.setVisibility(View.VISIBLE);
-            FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs)
-                    .delete().addOnCompleteListener(a -> {
-                if (a.isSuccessful())
+            FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs).delete().addOnCompleteListener(a -> {
+                if (a.isSuccessful()) {
                     Drop_reviews();
-                else
+                    credentials();
+                } else
                     new utils().message2("error occurred " + a.getException(), requireActivity());
 
             });
@@ -112,18 +107,34 @@ public class Edit_post extends Fragment {
         return view;
     }
 
+
+    private void UDPATE(String charges) {
+        mprogressBar4.setVisibility(View.VISIBLE);
+        Map<String, Object> u = MAP(charges);
+        if (!prices.getText().toString().trim().isEmpty() && !food_name.getText().toString().trim().isEmpty() && u != null)
+            FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs)
+                    .update(u).addOnCompleteListener(h -> {
+                if (h.isSuccessful()) {
+                    new utils().message2("Updated successfully ", requireActivity());
+                    mprogressBar4.setVisibility(View.INVISIBLE);
+                } else
+                    new utils().message2("error occurred " + h.getException(), requireActivity());
+            });
+        else if (u == null)
+            new utils().message2("Pls wait a while then try again", requireActivity());
+        else
+            new utils().message2("Pls fill out both field !", requireActivity());
+    }
+
     private void Drop_reviews() {
-        FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs).collection("reviews")
-                .get().addOnCompleteListener(b -> {
+        FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(docs).collection("reviews").get().addOnCompleteListener(b -> {
             if (b.isSuccessful()) {
                 List<DocumentSnapshot> oj = b.getResult().getDocuments();
                 for (DocumentSnapshot s : oj) {
                     FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(s.getId())
                             .delete().addOnCompleteListener(a -> {
-                        if (a.isSuccessful()) {
+                        if (a.isSuccessful())
                             Log.d(TAG, " Deleted ");
-                            credentials();
-                        }
                         else
                             Log.d(TAG, "Error occurred " + a.getException());
 
@@ -169,18 +180,21 @@ public class Edit_post extends Fragment {
         if (s3.doesObjectExist(p3, img.substring(img.lastIndexOf("/") + 1))) {
             s3.deleteObject(p3, img.substring(img.lastIndexOf("/") + 1));
             startActivity(new Intent(getContext(), MainActivity.class));
-        }else
+        } else
             new utils().message2("File Doesn't exist", requireActivity());
     }
 
-    private Map<String, Object> MAP() {
+    private Map<String, Object> MAP(String charges) {
+
         Map<String, Object> o = new HashMap<>();
-        o.put("food_name", food_name.getText().toString());
-        o.put("food_price", Long.valueOf(prices.getText().toString()));
-        return o;
+        if (charges != null) {
+            o.put("food_name", food_name.getText().toString());
+            worked_on_price = Integer.parseInt(charges) + Long.parseLong(prices.getText().toString());
+            o.put("food_price", worked_on_price);
+        }
+
+        return (worked_on_price != 0) ? o : null;
     }
-
-
 
 
 }

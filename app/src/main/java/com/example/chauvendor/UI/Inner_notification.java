@@ -107,7 +107,7 @@ public class Inner_notification extends AppCompatActivity {
                 if (n.isSuccessful()) {
                     for (QueryDocumentSnapshot x : n.getResult()) {
                         if (x.get("Cart_tracker").toString().equals(getIntent().getStringExtra("data_key"))) {
-                            list2.add(new utils().map(x, 1, ""));
+                            list2.add(new utils().map(x));
                             new utils().sum_quantity(x, getApplicationContext(), totals, 0, 0);
                             set_layout(list2);
                         }
@@ -178,7 +178,7 @@ public class Inner_notification extends AppCompatActivity {
                 if (token_gotten != null) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                         token_gotten.forEach(x -> token_approved = new HashSet<>(token_gotten));
-                    MINER_OUT_INDEX_VENDOR(current_vendor_index, timeStamp);
+                    MINER_OUT_INDEX_VENDOR( timeStamp);
                 }
 
             } else
@@ -189,8 +189,8 @@ public class Inner_notification extends AppCompatActivity {
     }
 
 
-    private void MINER_OUT_INDEX_VENDOR(String current_vendor_index, Object timeStamp) {
-        FirebaseFirestore.getInstance().collection(getString(R.string.USER_LOCATION)).document(current_vendor_index)
+    private void MINER_OUT_INDEX_VENDOR(Object timeStamp) {
+        FirebaseFirestore.getInstance().collection(getString(R.string.USER_LOCATION)).document(getIntent().getStringExtra("docs_key"))
                 .get().addOnCompleteListener(w -> {
             if (w.isSuccessful()) {
                 UserLocation user1 = w.getResult().toObject(UserLocation.class);
@@ -228,10 +228,7 @@ public class Inner_notification extends AppCompatActivity {
 
 
     private void SEND_NOTIFICATION(Set<String> token_approved, String user_id, String phone, GeoPoint geo_point, String img_url, String phone_no, Object timestamp) {
-
-        Log.d(TAG, "SEND_NOTIFICATION: " + token_approved + "  " + user_id + "  " + phone + "  " + geo_point + "  " + img_url + "  " + phone_no + "  " + timestamp);
         for (String to : token_approved) {
-
             Map<String, Object> pay_load = new HashMap<>();
             pay_load.put("Vendor", "Vendor: " + user.getUser().getName());
             pay_load.put("Vendor_img_url", img_url);

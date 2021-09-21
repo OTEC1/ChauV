@@ -1,5 +1,6 @@
 package com.example.chauvendor.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -34,8 +35,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.example.chauvendor.R;
-import com.example.chauvendor.Retrofit_.Base_config;
-import com.example.chauvendor.Retrofit_.Calls;
 import com.example.chauvendor.UI.MainActivity;
 import com.example.chauvendor.UI.Main_notification;
 import com.example.chauvendor.UI.Vendor_account;
@@ -49,19 +48,15 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.TreeMap;
 
 
 public class utils {
@@ -181,10 +176,8 @@ public class utils {
     }
 
 
-    public Map<String, Object> map(QueryDocumentSnapshot result, int r, String a) {
-        Map<String, Object> pack = new HashMap<>();
-
-        if (r == 1) {
+    public Map<String, Object> map(QueryDocumentSnapshot result) {
+        Map<String, Object> pack = new TreeMap<>();
             pack.put("Timestamp", TIME_FORMAT(result.get("TimeStamp").toString()));
             pack.put("doc_id", result.get("doc_id"));
             pack.put("food_name", result.get("food_name"));
@@ -193,7 +186,17 @@ public class utils {
             pack.put("item_id", result.get("item_id"));
             pack.put("quantity", result.get("quantity"));
             pack.put("cart_tracker", result.get("Cart_tracker"));
-        } else if (r == 2) {
+
+        return pack;
+    }
+
+
+
+
+
+    public Map<String, Object> map_data(QueryDocumentSnapshot result, String a) {
+        Map<String, Object> pack = new TreeMap<>();
+
             pack.put("docs_id", result.getId());
             pack.put("dstatus", result.get("DStatus"));
             pack.put("TimeStamp", TIME_FORMAT(result.get("TimeStamp").toString()));
@@ -207,22 +210,52 @@ public class utils {
             pack.put("cart_tracker", result.get("Cart_tracker"));
             pack.put("OBJ", result.get("OBJ"));
 
-        }
         return pack;
     }
+
+
 
     public String TIME_FORMAT(String result) {
         double l = Double.parseDouble(result);
         long h = (long) l;
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(h);
-        return cal.getTime().toString().replace("GMT+01:00", " ");
+        cal.setTimeZone(Calendar.getInstance().getTimeZone());
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:s");
+        Date x = cal.getTime();
+        return  formatter.format(x);
+
     }
+
+
+    public Map<String, Object> mapping(Map<String, Object> result) {
+        Map<String, Object> pack = new TreeMap<>();
+
+        pack.put("docs_id", result.get("docs_id"));
+        pack.put("dstatus", result.get("dstatus"));
+        pack.put("TimeStamp", result.get("TimeStamp"));
+        pack.put("vstatus", result.get("vstatus"));
+        pack.put("item_count", result.get("item_count"));
+        pack.put("name", result.get("name"));
+        pack.put("order_id", result.get("order_id"));
+        pack.put("phone", result.get("phone"));
+        pack.put("users", result.get("users"));
+        pack.put("current_doc", result.get("current_doc"));
+        pack.put("cart_tracker", result.get("cart_tracker"));
+        pack.put("OBJ", result.get("OBJ"));
+
+
+        return pack;
+    }
+
+
 
 
     private void request_user_sign_in(AppCompatActivity a) {
         new utils().message2("Pls Sign in", a);
     }
+
 
     private boolean SIGN_IN_USER() {
         return FirebaseAuth.getInstance().getUid() != null;
@@ -417,10 +450,15 @@ public class utils {
 
 
 
+    }
+
+
+
+
 //--------------------Remove a particular fragment  by tag--------------------------------//
 //    public void clears(AppCompatActivity activity) {
 //        Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag("gui");
 //        if (fragment != null)
 //            activity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 //    }
-}
+

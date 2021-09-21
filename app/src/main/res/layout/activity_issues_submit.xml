@@ -4,8 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/chau_vendor"
+    android:background="@mipmap/chau_vendor_"
     tools:context=".UI.Issues_submit">
+
+
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:src="@mipmap/chau_logo"
+        android:textColor="#fff"
+        android:textSize="50sp" />
 
 
     <LinearLayout

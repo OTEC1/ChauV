@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,11 +70,12 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
         holder.mStatus.setText(c);
         holder.mitem_count.setText((Integer.parseInt(new utils().Stringnify(items.get(position).get("item_count"))) == 1) ? new utils().Stringnify(items.get(position).get("item_count")) + " item" : new utils().Stringnify(items.get(position).get("item_count")) + " items");
-        holder.mphone.setText("Phone: " + new utils().Stringnify(items.get(position).get("phone")));
-        holder.mvendor_name.setText(new utils().Stringnify(items.get(position).get("name")));
-        holder.mvendor_id.setText(new utils().Stringnify(items.get(position).get("order_id")));
-        holder.mtime_stamp.setText("Date: " + new utils().Stringnify(items.get(position).get("TimeStamp")));
-        holder.muser_name.setText("Customer: " + new utils().Stringnify(items.get(position).get("users")));
+        holder.mphone.setText(" " + new utils().Stringnify(items.get(position).get("phone")));
+        holder.mvendor_name.setText(" " + new utils().Stringnify(items.get(position).get("name")));
+        holder.mvendor_id.setText(" " + new utils().Stringnify(items.get(position).get("order_id")));
+        holder.mtime_stamp.setText(" " + new utils().Stringnify(items.get(position).get("TimeStamp")));
+        holder.muser_name.setText(" " + new utils().Stringnify(items.get(position).get("users")));
+        holder.tracker_id.setText(" " + new utils().Stringnify(items.get(position).get("cart_tracker")));
 
 
         holder.cardView.setOnClickListener(o -> {
@@ -114,8 +116,9 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
 
     class MyHolder extends RecyclerView.ViewHolder {
-        private TextView muser_name, mphone, mtime_stamp, mitem_count, mStatus, mvendor_name, mvendor_id;
+        private TextView muser_name, mphone, mtime_stamp, mitem_count, mStatus, mvendor_name, mvendor_id,tracker_id;
         private CardView cardView;
+
 
 
         public MyHolder(View view) {
@@ -126,8 +129,10 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
             mitem_count = (TextView) view.findViewById(R.id.item_count);
             mStatus = (TextView) view.findViewById(R.id.Status);
             mvendor_id = (TextView) view.findViewById(R.id.vendor_id);
+            tracker_id = (TextView) view.findViewById(R.id.mtracker_id);
             mvendor_name = (TextView) view.findViewById(R.id.vendor_name);
             cardView = (CardView) view.findViewById(R.id.card);
+
 
         }
     }

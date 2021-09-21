@@ -140,9 +140,11 @@
 
 
             <TextView
+                android:id="@+id/issue_report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="20sp"
                 android:text="@string/having_issues_with_login_or_registration"
                 android:textColor="#000" />
 

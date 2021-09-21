@@ -85,18 +85,32 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/call_out_to_delivery_agent"
-                android:layout_width="170dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginStart="148dp"
-                android:layout_marginLeft="148dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
+                android:padding="10dp"
                 android:background="@drawable/button_lines"
                 android:text="@string/next"
+                android:textAllCaps="false"
+                android:textColor="@color/White" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_toLeftOf="@id/call_out_to_delivery_agent"
+                android:background="@drawable/button_lines_delete"
+                android:text="@string/Report"
                 android:textAllCaps="false"
                 android:textColor="@color/White" />
 

@@ -16,7 +16,8 @@
     <string name="Vendor_loc">Vendor Locations</string>
     <string name="vendor_uploads">Vendor Uploads</string>
     <string name="title_activity_business_details">Business_details</string>
-    <string name="next">Food ready send request</string>
+    <string name="next">Send request</string>
+    <string name="Report">Report</string>
     <string name="previous">Previous</string>
     <string name="DEVICE_TOKEN">device_token</string>
     <string name="DEVICE_REG_TOKEN">device_reg_token</string>

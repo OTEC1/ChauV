@@ -47,7 +47,7 @@ import static com.example.chauvendor.constant.Constants.READ_STORAGE_PERMISSION_
 
 public class Login extends AppCompatActivity {
 
-    private TextView link_register;
+    private TextView link_register,missue_report;
     private EditText editText, editText1;
     private Button button;
     private ProgressBar progressBar;
@@ -84,6 +84,7 @@ public class Login extends AppCompatActivity {
         link_register = (TextView) findViewById(R.id.link_register);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         home_screen = (RelativeLayout) findViewById(R.id.home_screen);
+        missue_report = (TextView) findViewById(R.id.issue_report);
         firebaseFirestore = FirebaseFirestore.getInstance();
         NOTIFICATION_LISTER();
         bull_eye();
@@ -97,10 +98,12 @@ public class Login extends AppCompatActivity {
             if (check())
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
                     signIn();
-
-
         });
 
+
+        missue_report.setOnClickListener(s->{
+            startActivity(new Intent(getApplicationContext(), Issues_submit.class));
+        });
     }
 
 

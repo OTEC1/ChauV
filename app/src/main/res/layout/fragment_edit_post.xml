@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/chau_vendor"
+    android:background="@mipmap/chau_vendor_"
     tools:context=".UI.Edit_post">
 
 
