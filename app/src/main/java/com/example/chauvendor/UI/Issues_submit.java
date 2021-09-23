@@ -29,12 +29,15 @@ public class Issues_submit extends AppCompatActivity {
         submit_issues = (Button) findViewById(R.id.submit_issues);
 
 
-        if (FirebaseAuth.getInstance().getUid() != null)
+        if (FirebaseAuth.getInstance().getUid() != null) {
             issues_reporter_email.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            issues_describe.requestFocus();
+        }
 
         submit_issues.setOnClickListener(g -> {
             if (!issues_reporter_email.getText().toString().trim().isEmpty() && !issues_describe.getText().toString().trim().isEmpty())
                 POST_ISSUES();
+
         });
 
 
@@ -42,8 +45,7 @@ public class Issues_submit extends AppCompatActivity {
 
     private void POST_ISSUES() {
 
-        FirebaseFirestore.getInstance().collection("Issues")
-                .document().set(MAP()).addOnCompleteListener(u -> {
+        FirebaseFirestore.getInstance().collection("Issues").document().set(MAP()).addOnCompleteListener(u -> {
             if (u.isSuccessful())
                 new utils().message2("Issues received so sorry for the inconvenience, we are looking into it right away", this);
             else

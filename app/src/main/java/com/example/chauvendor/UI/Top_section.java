@@ -68,6 +68,12 @@ public class Top_section extends Fragment {
                     case R.id.sign_out:
                         signout();
                         return true;
+
+
+
+                    case R.id.report:
+                        startActivity(new Intent(getContext(),Issues_submit.class));
+                        return true;
                 }
                 return false;
             });

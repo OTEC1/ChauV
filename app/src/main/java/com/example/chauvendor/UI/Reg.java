@@ -99,7 +99,7 @@ public class Reg extends AppCompatActivity {
 
 
     private String string, p1 = "", p2 = "", p3 = "", img_url;
-    private static final String TAG = "RegisterActiviy";
+    private static final String TAG = "RegisterActivity";
 
 
     private boolean mLocationPermissionGranted = false;
@@ -207,7 +207,7 @@ public class Reg extends AppCompatActivity {
                     String email1 = editText2.getText().toString();
                     if (task.isSuccessful()) {
                         User user = new User();
-                        user.setName(editText1.getText().toString());
+                        user.setName(editText1.getText().toString().toLowerCase());
                         user.setEmail(email1);
                         user.setUsername(email1.substring(0, email1.indexOf("@")));
                         user.setPhone(editText3.getText().toString());
@@ -504,7 +504,7 @@ public class Reg extends AppCompatActivity {
 
 
                 if (percentDo == 100) {
-                    startActivity(new Intent(getApplicationContext(), Login.class).putExtra("check_view", String.valueOf(1)));
+                    new utils().open_Fragment(new Business_details(), "Business_details", getApplicationContext(), new Bundle(), R.id.frameLayout);
                     button_reg.setEnabled(true);
                 }
 
@@ -536,8 +536,6 @@ public class Reg extends AppCompatActivity {
     private void message2(String localizedMessage) {
         new utils().message2(localizedMessage, this);
     }
-
-
 
 
     private void hide_bar() {
@@ -581,8 +579,6 @@ public class Reg extends AppCompatActivity {
 
 
     }
-
-
 
 
     private void pop_out(List<String> list) {

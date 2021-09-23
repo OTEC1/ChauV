@@ -248,6 +248,7 @@
                                     android:layout_centerHorizontal="true"
                                     android:background="@drawable/custom_lines1"
                                     android:hint="Food name"
+                                    android:focusable="false"
                                     android:padding="10dp"
                                     android:textColor="#000"
                                     android:textColorHint="#000" />
@@ -257,6 +258,7 @@
                                     android:id="@+id/foodprice"
                                     android:layout_width="300dp"
                                     android:layout_height="50dp"
+                                    android:focusable="false"
                                     android:layout_below="@+id/foodname"
                                     android:layout_centerHorizontal="true"
                                     android:layout_marginTop="10dp"

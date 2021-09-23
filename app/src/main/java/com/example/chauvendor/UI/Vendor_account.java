@@ -141,6 +141,17 @@ public class Vendor_account extends AppCompatActivity {
             new utils().quick_commission_call(TAG);
 
 
+        foodprice.setOnClickListener(u->{
+            FOCUS(foodprice,foodname);
+        });
+
+
+        foodname.setOnClickListener(u->{
+            FOCUS(foodprice,foodname);
+        });
+
+
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -189,6 +200,18 @@ public class Vendor_account extends AppCompatActivity {
             new utils().openFragment(new home(), this, new Bundle());
         });
 
+    }
+
+
+
+
+    private void FOCUS(EditText foodprice, EditText foodname) {
+        foodprice.setFocusableInTouchMode(true);
+        foodprice.setFocusable(true);
+        foodprice.requestFocus();
+        foodname.setFocusableInTouchMode(true);
+        foodname.setFocusable(true);
+        foodname.requestFocus();
     }
 
 

@@ -6,5 +6,93 @@
     tools:context=".UI.Business_details">
 
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+
+        <RelativeLayout
+            android:id="@+id/relLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/textEmailReg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="2dp"
+                android:src="@mipmap/chau_logo" />
+
+
+            <EditText
+                android:id="@+id/account_number"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/textEmailReg"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/custom_lines"
+                android:hint="Account no"
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/Black" />
+
+
+            <EditText
+                android:id="@+id/account_name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/account_number"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/custom_lines"
+                android:hint="Name on Account"
+                android:inputType="textEmailAddress"
+                android:padding="10dp"
+                android:textColor="@color/Black"
+                android:textColorHint="@color/Black" />
+
+
+            <Spinner
+                android:id="@+id/bank_select"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/account_name"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:textAlignment="center" />
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/bank_select"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="15dp"
+                android:background="@drawable/back_button"
+                android:text="Complete Registration"
+                android:textAllCaps="false"
+                android:textColor="#000" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_below="@id/btn_register" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
 
 </FrameLayout>

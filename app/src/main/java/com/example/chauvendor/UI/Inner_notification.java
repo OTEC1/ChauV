@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,9 +51,9 @@ public class Inner_notification extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView totals;
-    private Button button;
+    private Button button,mreport;
 
-
+//
     private List<String> list = new ArrayList<>(), token_gotten;
     private List<Map<String, Object>> list2 = new ArrayList<>();
     private Set<String> token_approved;
@@ -76,6 +77,7 @@ public class Inner_notification extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         totals = (TextView) findViewById(R.id.totals);
+        mreport = (Button) findViewById(R.id.report);
         button = (Button) findViewById(R.id.call_out_to_delivery_agent);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
         new utils().bottom_nav(bottomNavigationView, this, new Bundle());
@@ -95,6 +97,10 @@ public class Inner_notification extends AppCompatActivity {
         button.setOnClickListener(o -> {
             progressD().show();
             CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(doc, 0);
+        });
+
+        mreport.setOnClickListener(h->{
+            startActivity(new Intent(getApplicationContext(),Issues_submit.class));
         });
     }
 
