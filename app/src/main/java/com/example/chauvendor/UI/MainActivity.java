@@ -47,8 +47,6 @@ import static com.example.chauvendor.constant.Constants.*;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private FirebaseFirestore mfirestore;
-    private UserLocation muserLocation;
     private Keep_alive keep_alive;
     private Bundle bundle = new Bundle();
     private Intent intent;
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         decide = true;
-        if (FirebaseAuth.getInstance().getUid() != null) {
+        if (FirebaseAuth.getInstance().getUid() != null && CHECKED()) {
             if (CHARGES == null)
                 new utils().quick_commission_call(TAG);
             new utils().api_call_to_cache(getApplicationContext(), new ArrayList<>(), getString(R.string.CACHE_LIST_OF_VENDORS), 1);
@@ -86,10 +84,11 @@ public class MainActivity extends AppCompatActivity {
             CHECK_POLICY();
         STRICT_POLICY();
 
-        if (FirebaseAuth.getInstance().getUid() == null)
-            startActivity(new Intent(this, Login.class).putExtra("check_view", String.valueOf(2)));
-        else {
-            mfirestore = FirebaseFirestore.getInstance();
+        if (!CHECKED())
+            LOGIN();
+        else if (FirebaseAuth.getInstance().getUid() == null)
+            LOGIN();
+        else if (FirebaseAuth.getInstance().getUid() != null && CHECKED()) {
             bundle.putString("UI_to_display", "2");
             decide = new utils().bottom_nav(bottomNav, this, bundle);
             new utils().quick_commission_call(TAG);
@@ -98,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+
 
 
     public void NOTIFICATION_LISTER() {
@@ -227,6 +229,16 @@ public class MainActivity extends AppCompatActivity {
     //----------------------------------------------onBackPressed ---------------------------------------------//
 
 
+    private boolean CHECKED() {
+        if (new utils().init(getApplicationContext()).getString(getString(R.string.VENDOR), null) != null)
+            return true;
+        else
+            return false;
+    }
+
+    private void LOGIN() {
+        startActivity(new Intent(this, Login.class).putExtra("check_view", String.valueOf(2)));
+    }
 
     public void space(View view) {
     }

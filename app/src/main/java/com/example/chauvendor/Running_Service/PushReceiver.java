@@ -39,6 +39,7 @@ public class PushReceiver extends BroadcastReceiver {
         int notificationID = new Random().nextInt(3000);
         intent1.putExtra("ID", intent.getStringExtra("ID"));
         intent1.putExtra("docs", intent.getStringExtra("docs"));
+        intent1.putExtra("user_img_url", intent.getStringExtra("user_img_url"));
         PendingIntent  pendingIntent = PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.notify)

@@ -47,7 +47,7 @@ import static com.example.chauvendor.constant.Constants.READ_STORAGE_PERMISSION_
 
 public class Login extends AppCompatActivity {
 
-    private TextView link_register,missue_report;
+    private TextView link_register, missue_report;
     private EditText editText, editText1;
     private Button button;
     private ProgressBar progressBar;
@@ -101,7 +101,7 @@ public class Login extends AppCompatActivity {
         });
 
 
-        missue_report.setOnClickListener(s->{
+        missue_report.setOnClickListener(s -> {
             startActivity(new Intent(getApplicationContext(), Issues_submit.class));
         });
     }
@@ -165,12 +165,9 @@ public class Login extends AppCompatActivity {
             if (u.isSuccessful())
                 NAVIGATE_USER();
             else {
-                new utils().message("Registration section  not Updated", this);
+                new utils().message("Registration section  not Updated " + u.getException(), this);
                 progressBar.setVisibility(View.GONE);
-                Log.d(TAG, "RE_USE: " + u.getException());
             }
-
-
         });
 
     }
@@ -181,9 +178,7 @@ public class Login extends AppCompatActivity {
     private void UPDATE_LOCATION_SECTION(User user) {
         if (new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null) != null)
             if (!Objects.equals(FirebaseAuth.getInstance().getUid(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))) {
-                FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc))
-                        .document(new utils().init(getApplicationContext())
-                                .getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))
+                FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc)).document(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null))
                         .update("user", MAP_USER(user, 0)).addOnCompleteListener(u -> {
                     if (u.isSuccessful())
                         RE_USE(1, MAP(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null));
@@ -211,7 +206,6 @@ public class Login extends AppCompatActivity {
     //Step 6b
     private Object MAP_USER(User user, int y) {
         Map<String, Object> i = new HashMap<>();
-        Log.d(TAG, "MAP_USER: " + user.getApp_user());
         i.put("app_user", user.getApp_user());
         i.put("bad", user.getBad());
         i.put("business_details", user.getBusiness_details());
@@ -237,15 +231,13 @@ public class Login extends AppCompatActivity {
     //Step 7
     private void NAVIGATE_USER() {
 
-        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid())
-                .get().addOnCompleteListener(u -> {
+        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(u -> {
             if (u.isSuccessful()) {
                 User user = u.getResult().toObject(User.class);
                 UPDATE_VENDOR_LOCATIONS(user);
             } else {
-                new utils().message("Error getting  user details", this);
+                new utils().message("Error getting  user details" + u.getException(), this);
                 progressBar.setVisibility(View.GONE);
-                Log.d(TAG, "RE_USE: " + u.getException());
             }
 
         });
@@ -254,7 +246,7 @@ public class Login extends AppCompatActivity {
     }
 
 
-    //Step 9
+    //Step 8
     private void UPDATE_VENDOR_LOCATIONS(User user) {
         FirebaseFirestore.getInstance().collection(getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid())
                 .update("user", MAP_USER(user, 1)).addOnCompleteListener(u -> {
@@ -273,28 +265,30 @@ public class Login extends AppCompatActivity {
     //Step final
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void RE_USE(int i, Map<String, Object> s, String doc_id) {
-        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id)
-                .update(s).addOnCompleteListener(task -> {
+        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(doc_id).update(s).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 if (i != 1) {
-                    firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null)).get()
-                            .addOnCompleteListener(d -> {
-                                if (d.isSuccessful()) {
-                                    User user = d.getResult().toObject(User.class);
-                                    UPDATE_LOCATION_SECTION(user);
-                                    Log.d(TAG, "RE_USE: " + user);
-                                }
-                            });
+                    if (new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null) != null)
+                        firebaseFirestore.collection(getString(R.string.Vendor_reg)).document(new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null)).get()
+                                .addOnCompleteListener(d -> {
+                                    if (d.isSuccessful()) {
+                                        User user = d.getResult().toObject(User.class);
+                                        UPDATE_LOCATION_SECTION(user);
+                                    }
+                                });
+                    else
+                        FINAL_DOC_REF();
                 } else
                     FINAL_DOC_REF();
             } else {
-                new utils().message("Account not Registered", this);
+                new utils().message("Account not Registered" + task.getException(), this);
                 progressBar.setVisibility(View.GONE);
-                Log.d(TAG, "RE_USE: " + task.getException());
             }
 
         });
     }
+
+
 
 
     private boolean check() {
@@ -323,7 +317,6 @@ public class Login extends AppCompatActivity {
 
 
     //---------------------------------Location----------------------------------//
-    //Step 1
 
 
     //Step 2

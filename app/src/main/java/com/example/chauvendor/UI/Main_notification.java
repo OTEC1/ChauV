@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 
 import com.example.chauvendor.Adapter.Notification_main_view;
 import com.example.chauvendor.R;
+import com.example.chauvendor.util.Constants;
 import com.example.chauvendor.util.utils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,6 +75,10 @@ public class Main_notification extends AppCompatActivity {
         new utils().bottom_nav(bottom_nav, this, bundle);
         list3 = new ArrayList<>();
         list4 = new ArrayList<>();
+        Constants.IMGURL = getIntent().getStringExtra("user_img_url");
+
+
+
         if (getIntent().getStringExtra("docs") != null) {
             list3.add(getIntent().getStringExtra("ID"));
             Check_for_vendor_id(list3, 1);
@@ -83,8 +88,8 @@ public class Main_notification extends AppCompatActivity {
                 Check_for_vendor_id(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)), 0);
                 Log.d(TAG, "UP");
             }
-
         }
+
     }
 
 

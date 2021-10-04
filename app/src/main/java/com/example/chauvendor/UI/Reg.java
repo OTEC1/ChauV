@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -92,6 +93,7 @@ public class Reg extends AppCompatActivity {
     private FirebaseFirestore mfirestore;
     private GeoPoint geoPoint;
     private Uri imgUri;
+    private FrameLayout frameLayout;
 
 
     private List<String> list = new ArrayList();
@@ -144,9 +146,15 @@ public class Reg extends AppCompatActivity {
         mprogressBar = (ProgressBar) findViewById(R.id.progressBar);
         cat = (ProgressBar) findViewById(R.id.category_spinner);
         button1 = (Button) findViewById(R.id.pic_selector);
+        frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
         mfirestore = FirebaseFirestore.getInstance();
-        drop_down_populate(new ArrayList(), TAG, this);
+        drop_down_populate(new ArrayList<>(), TAG, this);
+
+
+        frameLayout.setOnClickListener(d -> {
+
+        });
 
 
         button_reg.setOnClickListener(view -> {
@@ -287,6 +295,7 @@ public class Reg extends AppCompatActivity {
         }
     }
 
+
     //Step 4
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -378,6 +387,7 @@ public class Reg extends AppCompatActivity {
 
     }
 
+
     private void message_reg(String s) {
         new utils().message2(s, this);
     }
@@ -406,9 +416,9 @@ public class Reg extends AppCompatActivity {
                         if (muserLocation != null)
                             muserLocation.setGeo_point(geoPoint);
 
-                        if (STOP_SERVICE == 0 && i != 0) {
+                        if (C == 0 && i != 0) {
                             saveUserLocation(vs);
-                            STOP_SERVICE = 2;
+                            C++;
                         }
 
                     }
@@ -503,10 +513,8 @@ public class Reg extends AppCompatActivity {
                 int percentDo = (int) percentDone;
 
 
-                if (percentDo == 100) {
-                    new utils().open_Fragment(new Business_details(), "Business_details", getApplicationContext(), new Bundle(), R.id.frameLayout);
-                    button_reg.setEnabled(true);
-                }
+                if (percentDo == 100)
+                    NEXT_PAGE();
 
 
             }
@@ -526,12 +534,18 @@ public class Reg extends AppCompatActivity {
 
     }
 
+    private void NEXT_PAGE() {
+        new utils().openFragment(new Business_details(), this, new Bundle());
+        button_reg.setEnabled(true);
+    }
+
     //-----------------------------------------------End S3 Query------------------------------------//
 
 
     private void message(Exception ex) {
         new utils().message2(ex.getLocalizedMessage(), this);
     }
+
 
     private void message2(String localizedMessage) {
         new utils().message2(localizedMessage, this);
@@ -573,7 +587,7 @@ public class Reg extends AppCompatActivity {
             @Override
             public void onFailure(@NotNull Call<List<Map<String, Object>>> call, Throwable t) {
                 Log.d(TAG, "onResponse: " + t);
-                message2(t.getLocalizedMessage());
+                message2("Error occurred "+t.getLocalizedMessage());
             }
         });
 

@@ -91,7 +91,7 @@ public class Vendor_account extends AppCompatActivity {
 
 
     private FirebaseFirestore mfirebaseFirestore;
-    private List arrayList;
+    private List arrays;
     private List<Map<String, Object>> obj;
     private ArrayAdapter adapter1;
     private UserLocation user;
@@ -353,7 +353,7 @@ public class Vendor_account extends AppCompatActivity {
 
     private void populate_drop_down() {
         obj = new ArrayList<>();
-        arrayList = new ArrayList<>();
+        arrays = new ArrayList<>();
         Calls calls = Base_config.getConnection().create(Calls.class);
         Call<List<Map<String, Object>>> search = calls.getCat();
         search.enqueue(new Callback<List<Map<String, Object>>>() {
@@ -362,14 +362,13 @@ public class Vendor_account extends AppCompatActivity {
                 obj = response.body();
                 assert obj != null;
                 for (Map<String, Object> z : obj)
-                    arrayList.add(Objects.requireNonNull(z.get("category")).toString());
-                if (arrayList != null)
-                    pop_out(arrayList);
+                    arrays.add(Objects.requireNonNull(z.get("category")).toString());
+                if (arrays != null)
+                    pop_out(arrays);
             }
 
             @Override
             public void onFailure(Call<List<Map<String, Object>>> call, @NotNull Throwable t) {
-                Log.d(TAG, "onResponse: " + t);
                 message2(t.getLocalizedMessage());
             }
         });

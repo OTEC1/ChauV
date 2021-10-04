@@ -8,5 +8,7 @@ public class Constants {
     public  static CharSequence CHANNEL_NAME = "Paid Orders Channel";
     public  static String NOTIFICATION_TITLE  = "Chau";
     public  static String CHARGES;
+    public  static  String IMGURL;
+    public  static  int notification_count = 0;
 
 }

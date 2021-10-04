@@ -10,4 +10,8 @@ public interface Calls {
 
     @GET("Snap_cat")
     Call<List<Map<String,Object>>>  getCat();
+
+
+    @GET("Banklist")
+    Call<List<Map<String,Object>>>  get_list_of_bank();
 }

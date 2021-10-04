@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
@@ -66,9 +67,8 @@ public class utils {
     private SharedPreferences sp;
 
 
-
-    public  String Stringify(Object x){
-        return  String.valueOf(x);
+    public String Stringify(Object x) {
+        return String.valueOf(x);
     }
 
 
@@ -178,41 +178,37 @@ public class utils {
 
     public Map<String, Object> map(QueryDocumentSnapshot result) {
         Map<String, Object> pack = new TreeMap<>();
-            pack.put("Timestamp", TIME_FORMAT(result.get("TimeStamp").toString()));
-            pack.put("doc_id", result.get("doc_id"));
-            pack.put("food_name", result.get("food_name"));
-            pack.put("food_price", result.get("food_price"));
-            pack.put("img_url", result.get("img_url"));
-            pack.put("item_id", result.get("item_id"));
-            pack.put("quantity", result.get("quantity"));
-            pack.put("cart_tracker", result.get("Cart_tracker"));
+        pack.put("Timestamp", TIME_FORMAT(result.get("TimeStamp").toString()));
+        pack.put("doc_id", result.get("doc_id"));
+        pack.put("food_name", result.get("food_name"));
+        pack.put("food_price", result.get("food_price"));
+        pack.put("img_url", result.get("img_url"));
+        pack.put("item_id", result.get("item_id"));
+        pack.put("quantity", result.get("quantity"));
+        pack.put("cart_tracker", result.get("Cart_tracker"));
 
         return pack;
     }
-
-
-
 
 
     public Map<String, Object> map_data(QueryDocumentSnapshot result, String a) {
         Map<String, Object> pack = new TreeMap<>();
 
-            pack.put("docs_id", result.getId());
-            pack.put("dstatus", result.get("DStatus"));
-            pack.put("TimeStamp", TIME_FORMAT(result.get("TimeStamp").toString()));
-            pack.put("vstatus", result.get("VStatus"));
-            pack.put("item_count", result.get("item_count"));
-            pack.put("name", result.get("name"));
-            pack.put("order_id", result.get("order_id"));
-            pack.put("phone", result.get("phone"));
-            pack.put("users", result.get("users"));
-            pack.put("current_doc", a);
-            pack.put("cart_tracker", result.get("Cart_tracker"));
-            pack.put("OBJ", result.get("OBJ"));
+        pack.put("docs_id", result.getId());
+        pack.put("dstatus", result.get("DStatus"));
+        pack.put("TimeStamp", TIME_FORMAT(result.get("TimeStamp").toString()));
+        pack.put("vstatus", result.get("VStatus"));
+        pack.put("item_count", result.get("item_count"));
+        pack.put("name", result.get("name"));
+        pack.put("order_id", result.get("order_id"));
+        pack.put("phone", result.get("phone"));
+        pack.put("users", result.get("users"));
+        pack.put("current_doc", a);
+        pack.put("cart_tracker", result.get("Cart_tracker"));
+        pack.put("OBJ", result.get("OBJ"));
 
         return pack;
     }
-
 
 
     public String TIME_FORMAT(String result) {
@@ -224,7 +220,7 @@ public class utils {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:s");
         Date x = cal.getTime();
-        return  formatter.format(x);
+        return formatter.format(x);
 
     }
 
@@ -250,8 +246,6 @@ public class utils {
     }
 
 
-
-
     private void request_user_sign_in(AppCompatActivity a) {
         new utils().message2("Pls Sign in", a);
     }
@@ -262,8 +256,18 @@ public class utils {
     }
 
 
-    //----------------------------------------------Fragment Change ---------------------------------------------//
+    //Open Fragment from  Activity Class
     public void openFragment(Fragment fragment, AppCompatActivity appCompatActivity, Bundle s) {
+        FragmentTransaction fragmentTransaction = appCompatActivity.getSupportFragmentManager().beginTransaction();
+        fragment.setArguments(s);
+        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+
+    //open from  fragment
+    public void openFragments(Fragment fragment, FragmentActivity appCompatActivity, Bundle s) {
         FragmentTransaction fragmentTransaction = appCompatActivity.getSupportFragmentManager().beginTransaction();
         fragment.setArguments(s);
         fragmentTransaction.replace(R.id.frameLayout, fragment);
@@ -351,8 +355,7 @@ public class utils {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public UserLocation GET_VENDOR_CACHED(Context view, String tag) {
         String arrayListString = init(view).getString(tag, null);
-        Type type = new TypeToken<UserLocation>() {
-        }.getType();
+        Type type = new TypeToken<UserLocation>() {}.getType();
         return new Gson().fromJson(arrayListString, type);
 
     }
@@ -362,10 +365,10 @@ public class utils {
 
         FirebaseFirestore.getInstance().collection(context.getString(R.string.Vendor_loc)).document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(h -> {
             if (h.isSuccessful()) {
-                UserLocation geoPoint = new UserLocation();
-                geoPoint.setUser(h.getResult().get("user", User.class));
-                geoPoint.setGeo_point(h.getResult().getGeoPoint("geo_point"));
-                CACHE_VENDOR(geoPoint, context, 0, context.getString(R.string.VENDOR));
+                UserLocation users = new UserLocation();
+                users.setUser(h.getResult().get("user", User.class));
+                users.setGeo_point(h.getResult().getGeoPoint("geo_point"));
+                CACHE_VENDOR(users, context, 0, context.getString(R.string.VENDOR));
                 context.startActivity(new Intent(context, MainActivity.class));
                 progressBar.setVisibility(View.INVISIBLE);
             } else
@@ -447,12 +450,16 @@ public class utils {
     }
 
 
-
-
-
+    public Map<String, Object> MAP(String names, String account, String bank_selected) {
+        long x = Long.parseLong(account);
+        Map<String, Object> carry = new HashMap<>();
+        carry.put("account_name", names);
+        carry.put("Bank", bank_selected);
+        carry.put("account", x);
+        carry.put("ID", FirebaseAuth.getInstance().getUid());
+        return carry;
     }
-
-
+}
 
 
 //--------------------Remove a particular fragment  by tag--------------------------------//
