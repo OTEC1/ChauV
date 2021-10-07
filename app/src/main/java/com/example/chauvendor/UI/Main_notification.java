@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -82,11 +81,9 @@ public class Main_notification extends AppCompatActivity {
         if (getIntent().getStringExtra("docs") != null) {
             list3.add(getIntent().getStringExtra("ID"));
             Check_for_vendor_id(list3, 1);
-            Log.d(TAG, " DOWN");
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Check_for_vendor_id(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)), 0);
-                Log.d(TAG, "UP");
             }
         }
 
@@ -130,7 +127,6 @@ public class Main_notification extends AppCompatActivity {
             list4.add(new utils().mapping(map));
             if (!op.hasNext() && list4.size() > 0) {
                 set_layout(MapSort(list4));
-                Log.d(TAG, "getData: " + list4.size());
             }
         }
     }

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -238,7 +237,6 @@ public class Vendor_account extends AppCompatActivity {
                             send_data_to_s3(imgUri, m, task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
                     } catch (URISyntaxException e) {
                         message2(e.toString());
-                        Log.d(TAG, e.toString());
                         hide_progress();
                     }
 
@@ -303,7 +301,6 @@ public class Vendor_account extends AppCompatActivity {
             @Override
             public void onError(int id, Exception ex) {
                 message2(ex.getLocalizedMessage());
-                Log.d(TAG, ex.getLocalizedMessage());
                 hide_progress();
 
             }

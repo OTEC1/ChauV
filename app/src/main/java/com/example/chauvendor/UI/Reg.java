@@ -11,9 +11,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -265,7 +263,6 @@ public class Reg extends AppCompatActivity {
 
     //Step 2
     public boolean isServicesOK() {
-        Log.d(TAG, "isServicesOK: checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(Reg.this);
 
@@ -302,11 +299,9 @@ public class Reg extends AppCompatActivity {
                 .setTitle(getString(R.string.app_name))
                 .setMessage("Pls turn on your GPRS and internet too reset location, do you want to enable it ?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-                    }
+                .setPositiveButton("Yes", (dialog, id) -> {
+                    Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                 });
         final AlertDialog alert = builder.create();
         alert.show();
@@ -326,7 +321,6 @@ public class Reg extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if (mLocationPermissionGranted)
@@ -468,7 +462,6 @@ public class Reg extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     message(e);
-                    Log.d(TAG, e.toString());
                     hide_progress();
                 }
             }
@@ -522,7 +515,6 @@ public class Reg extends AppCompatActivity {
             @Override
             public void onError(int id, Exception ex) {
                 message(ex);
-                Log.d(TAG, ex.getLocalizedMessage());
                 hide_progress();
                 button_reg.setEnabled(true);
 
@@ -586,7 +578,6 @@ public class Reg extends AppCompatActivity {
 
             @Override
             public void onFailure(@NotNull Call<List<Map<String, Object>>> call, Throwable t) {
-                Log.d(TAG, "onResponse: " + t);
                 message2("Error occurred "+t.getLocalizedMessage());
             }
         });

@@ -118,11 +118,11 @@ public class utils {
         RequestOptions requestOptions = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true);
-        Glide.with(context)
-                .load((String.valueOf(url)))
+
+        Glide.with(context).load(url)
                 .listener(new RequestListener<Drawable>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable @org.jetbrains.annotations.Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    public boolean onLoadFailed(@Nullable  GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         progressBar_img.setVisibility(View.GONE);
                         return false;
                     }
@@ -137,6 +137,10 @@ public class utils {
                 .into(vendor_img);
 
     }
+
+
+
+
 
 
     public boolean bottom_nav(BottomNavigationView bottomNav, AppCompatActivity appCompatActivity, Bundle s) {

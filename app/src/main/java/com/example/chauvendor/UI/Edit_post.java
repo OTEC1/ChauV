@@ -161,7 +161,6 @@ public class Edit_post extends Fragment {
                             S3_drop(task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
                     } catch (Exception e) {
                         new utils().message2(e.toString(), requireActivity());
-                        Log.d(TAG, e.toString());
                         mprogressBar4.setVisibility(View.INVISIBLE);
                     }
 

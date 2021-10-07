@@ -56,8 +56,6 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
     @Override
     public void onBindViewHolder(@NonNull @NotNull Notification_main_view.MyHolder holder, int position) {
 
-        Log.d(TAG, "onBindViewHolder: " + items);
-
         boolean obj = (boolean) items.get(position).get("OBJ");
         boolean bool = (boolean) items.get(position).get("dstatus");
         boolean bool2 = (boolean) items.get(position).get("vstatus");

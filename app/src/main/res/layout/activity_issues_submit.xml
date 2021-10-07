@@ -10,6 +10,9 @@
 
 
 
+
+
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,6 +31,8 @@
         android:weightSum="100">
 
 
+
+
         <EditText
             android:id="@+id/issues_report_email"
             android:layout_width="match_parent"
@@ -36,6 +41,7 @@
             android:background="@drawable/text_background"
             android:hint="Registration email"
             android:padding="10dp" />
+
 
         <EditText
             android:id="@+id/issues_describe"
@@ -52,6 +58,9 @@
             android:padding="10dp" />
 
 
+
+
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/submit_issues"
             android:layout_width="wrap_content"
@@ -63,6 +72,8 @@
             android:text="Submit"
             android:textAllCaps="false"
             android:textColor="@color/White" />
+
+
     </LinearLayout>
 
 </RelativeLayout>

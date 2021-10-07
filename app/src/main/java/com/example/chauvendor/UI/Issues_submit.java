@@ -2,6 +2,7 @@ package com.example.chauvendor.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ public class Issues_submit extends AppCompatActivity {
 
     private EditText issues_describe, issues_reporter_email;
     private Button submit_issues;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +46,15 @@ public class Issues_submit extends AppCompatActivity {
     }
 
     private void POST_ISSUES() {
-
+        progressD(this).show();
         FirebaseFirestore.getInstance().collection("Issues").document().set(MAP()).addOnCompleteListener(u -> {
-            if (u.isSuccessful())
-                new utils().message2("Issues received so sorry for the inconvenience, we are looking into it right away", this);
-            else
-                new utils().message2(" Error occurred while submitting Issues " + u.getException(), this);
-
+            if (u.isSuccessful()) {
+                new utils().message("Issues received so sorry for the inconvenience, we are looking into it right away", this);
+                progressDialog.dismiss();
+            }else {
+                new utils().message(" Error occurred while submitting Report " + u.getException(), this);
+                progressDialog.dismiss();
+            }
 
         });
     }
@@ -59,6 +63,19 @@ public class Issues_submit extends AppCompatActivity {
         Map<String, Object> o = new HashMap<>();
         o.put("issue_user_email", issues_reporter_email.getText().toString());
         o.put("issues", issues_describe.getText().toString());
+        if (getIntent().getStringExtra("order_id") != null)
+            o.put("order_id", getIntent().getStringExtra("order_id"));
+        else
+            o.put("order_id", "");
         return o;
+    }
+
+
+    public ProgressDialog progressD(AppCompatActivity compatActivity) {
+        progressDialog = new ProgressDialog(compatActivity);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.custom_progress2);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        return progressDialog;
     }
 }

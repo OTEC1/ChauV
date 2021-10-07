@@ -9,8 +9,8 @@ public class Constants {
     public static final int LOCATION_UPDATE_INTERVAL = 3000;
     public static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 300;
     public static int PICK_IMAGE =2000;
-    public static int C =0;
-    public final static long UPDATE_INTERVAL = 4 * 1000;
+    public static int C = 0;
+    public final static long UPDATE_INTERVAL = 3000;
     public final static long FAST_INTERVAL = 2000;
     public  static Object CHARGES;
 

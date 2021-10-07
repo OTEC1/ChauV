@@ -1,5 +1,6 @@
 package com.example.chauvendor.UI;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +46,6 @@ import java.util.Set;
 public class Inner_notification extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
-    private CollectionReference collectionReference;
     private Notification_children_view adapter;
     private ProgressDialog progressDialog;
     private UserLocation user1;
@@ -53,6 +53,7 @@ public class Inner_notification extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView totals;
     private Button button, mreport;
+    private  User user2;
 
 
     private List<String> token_gotten;
@@ -64,11 +65,13 @@ public class Inner_notification extends AppCompatActivity {
     private boolean status = true;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onResume() {
         super.onResume();
         token_approved = new HashSet<>();
         token_gotten = new ArrayList<>();
+        user2 = new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR)).getUser();
 
     }
 
@@ -89,17 +92,14 @@ public class Inner_notification extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             api_call1(new utils().multi_call_method(getApplicationContext(), getString(R.string.CACHE_LIST_OF_VENDORS)));
 
-        Log.d(TAG, "onCreate: " + getIntent().getStringExtra("docID") + "    " + Constants.IMGURL);
-
-
         button.setOnClickListener(o -> {
-            progressD().show();
+            progressD(this).show();
             CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(doc(), 0);
             Constants.notification_count = 0;
         });
 
         mreport.setOnClickListener(h -> {
-            startActivity(new Intent(getApplicationContext(), Issues_submit.class));
+            startActivity(new Intent(getApplicationContext(), Issues_submit.class).putExtra("order_id",getIntent().getStringExtra("data_key")));
         });
     }
 
@@ -113,8 +113,8 @@ public class Inner_notification extends AppCompatActivity {
     private void api_call1(List<String> strings) {
         for (int y = 0; y < strings.size(); y++) {
             current_vendor_index = strings.get(y);
-            collectionReference = FirebaseFirestore.getInstance().collection(getString(R.string.USER_PAID_ORDES)).document("Orders").collection(current_vendor_index);
-            collectionReference.get().addOnCompleteListener(n -> {
+            FirebaseFirestore.getInstance().collection(getString(R.string.USER_PAID_ORDES)).document("Orders").collection(current_vendor_index)
+            .get().addOnCompleteListener(n -> {
                 if (n.isSuccessful()) {
                     for (QueryDocumentSnapshot x : n.getResult()) {
                         if (x.get("Cart_tracker").toString().equals(getIntent().getStringExtra("data_key"))) {
@@ -148,7 +148,7 @@ public class Inner_notification extends AppCompatActivity {
                     progressDialog.dismiss();
                     new utils().message("Sent out Request", this);
                 } else
-                    Log.d(TAG, "update:1 " + u.getException());
+                    Log.d(TAG, "Error occurred " + u.getException());
             });
         else
             b.get().addOnCompleteListener(n -> {
@@ -160,7 +160,7 @@ public class Inner_notification extends AppCompatActivity {
                         new utils().buildAlertMessageNoGps(this, 1, "Already Sent Request " + getString(R.string.app_name) + " is Searching for nearby Delivery Guys...");
                     }
                 } else
-                    Log.d(TAG, "update2: " + n.getException());
+                    Log.d(TAG, "Error occurred: " + n.getException());
 
             });
         return null;
@@ -168,7 +168,6 @@ public class Inner_notification extends AppCompatActivity {
 
 
     private void GET_USER_IMG(String user_id, Set<String> token, String phone, GeoPoint geo_point, String img_url, String phone1, Object time, String name) {
-        Log.d(TAG, "GET_USER_IMG: ");
         FirebaseFirestore.getInstance().collection(getString(R.string.USER_REG)).document(user_id)
                 .get().addOnCompleteListener(u -> {
             if (u.isSuccessful()) {
@@ -192,7 +191,6 @@ public class Inner_notification extends AppCompatActivity {
                     GeoPoint geo = x.get("geo_point", GeoPoint.class);
                     if (user.get("token").toString().trim().length() > 0)
                         CHECK_FOR_NEARBY_DELIVERIES_RADIUS(geo.getLatitude(), geo.getLongitude(), Double.toHexString(user1.getGeo_point().getLatitude()), Double.toHexString(user1.getGeo_point().getLongitude()), user.get("token").toString(), timeStamp);
-                    Log.d(TAG, "PASS_ON: " + geo + "  " + user1.getGeo_point());
                 }
             } else
                 new utils().message2("Error Getting " + i.getException(), this);
@@ -231,7 +229,6 @@ public class Inner_notification extends AppCompatActivity {
         token_gotten.add(m);
         token_approved = new HashSet<>(token_gotten);
         GET_USER_DATA(timeStamp, token_approved);
-        Log.d(TAG, "CHECK_FOR_NEARBY_DELIVERIES_RADIUS: checked ");
     }
 
 
@@ -240,15 +237,13 @@ public class Inner_notification extends AppCompatActivity {
             if (w.isSuccessful()) {
                 UserLocation user1 = w.getResult().toObject(UserLocation.class);
                 assert user1 != null;
-                if (Constants.IMGURL != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                        SEND_NOTIFICATION(data, user1.getUser().getUser_id(), user1.getUser().getPhone(), user1.getGeo_point(), new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR)).getUser().getImg_url(), user1.getUser().getPhone(), timeStamp,user1.getUser().getName());
-                } else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                        GET_USER_IMG(user1.getUser().getUser_id(), data , user1.getUser().getPhone(), user1.getGeo_point(), new utils().GET_VENDOR_CACHED(getApplicationContext(), getString(R.string.VENDOR)).getUser().getImg_url(), user1.getUser().getPhone(), timeStamp,user1.getUser().getName());
-                }
+                if (Constants.IMGURL != null)
+                        SEND_NOTIFICATION(data, user1.getUser().getUser_id(), user2.getPhone(), user1.getGeo_point(), user2.getImg_url(), user1.getUser().getPhone(), timeStamp,user1.getUser().getName());
+                 else
+                        GET_USER_IMG(user1.getUser().getUser_id(), data , user2.getPhone(), user1.getGeo_point(), user2.getImg_url(), user1.getUser().getPhone(), timeStamp,user1.getUser().getName());
+
             } else
-                Log.d(TAG, "MINER_OUT_INDEX_VENDOR: " + w.getException());
+                Log.d(TAG, "GET_USER_DATA Error occurred " + w.getException());
 
         });
 
@@ -258,7 +253,6 @@ public class Inner_notification extends AppCompatActivity {
     private void SEND_NOTIFICATION(Set<String> token_approved, String user_id, String phone, GeoPoint geo_point, String img_url, String phone_no, Object timestamp,String name) {
         if (Constants.notification_count == 0)
             for (String to : token_approved) {
-                Log.d(TAG, "SEND_NOTIFICATION: " + to);
                 Map<String, Object> pay_load = new HashMap<>();
                 pay_load.put("Client_ID", user_id);
                 pay_load.put("Client_name", name);
@@ -281,7 +275,7 @@ public class Inner_notification extends AppCompatActivity {
                     CHECK_FOR_NEARBY_DELIVERIES_ON_CLICK(doc(), 1);
                     Constants.notification_count++;
                 } catch (Exception ex) {
-                    Log.d(TAG, "SEND_NOTIFICATION: " + ex.toString());
+                    Log.d(TAG, "SEND_NOTIFICATION Error occurred " + ex.toString());
                 }
             }
     }
@@ -290,12 +284,13 @@ public class Inner_notification extends AppCompatActivity {
     //--------------------------------------eND Check for nearby vendors -----------------------------------------//
 
 
-    public ProgressDialog progressD() {
-        progressDialog = new ProgressDialog(Inner_notification.this);
+    public ProgressDialog progressD(AppCompatActivity compatActivity) {
+        progressDialog = new ProgressDialog(compatActivity);
         progressDialog.show();
         progressDialog.setContentView(R.layout.custom_progress);
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         return progressDialog;
     }
+
 
 }

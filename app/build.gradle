@@ -69,6 +69,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:7.2.0'
 
 
+
     //messaging
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
     implementation 'com.google.firebase:firebase-iid:21.1.0'

@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class home extends Fragment {
 
-    private CollectionReference reference;
+
     private RecyclerView recyclerView;
     private home_apdater adapter;
     private ProgressBar progressBar;

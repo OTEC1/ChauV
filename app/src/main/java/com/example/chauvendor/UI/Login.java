@@ -86,7 +86,8 @@ public class Login extends AppCompatActivity {
         home_screen = (RelativeLayout) findViewById(R.id.home_screen);
         missue_report = (TextView) findViewById(R.id.issue_report);
         firebaseFirestore = FirebaseFirestore.getInstance();
-        NOTIFICATION_LISTER();
+
+        new MainActivity().NOTIFICATION_LISTER(new Keep_alive(), new Intent(), this);
         bull_eye();
 
         home_screen.setOnClickListener(s -> {
@@ -183,9 +184,8 @@ public class Login extends AppCompatActivity {
                     if (u.isSuccessful())
                         RE_USE(1, MAP(), new utils().init(getApplicationContext()).getString(getString(R.string.LAST_SIGN_IN_VENDOR), null));
                     else {
-                        new utils().message("Location section not Updated", this);
+                        new utils().message("Error occurred "+u.getException(), this);
                         progressBar.setVisibility(View.GONE);
-                        Log.d(TAG, "RE_USE: " + u.getException());
                     }
 
                 });
@@ -323,7 +323,6 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, " Disabled Location ");
 
     }
     //------------------------------------------End Of Location--------------------------------//
@@ -361,7 +360,6 @@ public class Login extends AppCompatActivity {
         if (SDK_INT > 8) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            Log.d(TAG, " Called !");
         }
     }
 
@@ -431,25 +429,6 @@ public class Login extends AppCompatActivity {
     }
 
 
-    public void NOTIFICATION_LISTER() {
-        if (!Pushy.isRegistered(getApplicationContext()))
-            new RegisterUser(this).execute();
-        Pushy.listen(this);
-        NOTIFICATION_LISTER_1();
-    }
-
-
-    private void NOTIFICATION_LISTER_1() {
-
-        keep_alive = new Keep_alive();
-        intent = new Intent(this, keep_alive.getClass());
-        if (!isServicerunning(keep_alive.getClass()))
-            startService(intent);
-
-        if (!Pushy.isRegistered(getApplicationContext()))
-            new RegisterUser(this).execute();
-        Pushy.listen(this);
-    }
 
 
     private boolean isServicerunning(Class<? extends Keep_alive> aClass) {

@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -26,7 +25,7 @@ import me.pushy.sdk.Pushy;
 
 import static com.example.chauvendor.constant.Constants.*;
 
-public class PushReceiver extends BroadcastReceiver {
+public class  PushReceiver extends BroadcastReceiver {
 
     private String TAG = "PushReceiver";
 
@@ -54,13 +53,12 @@ public class PushReceiver extends BroadcastReceiver {
         if (intent.getStringExtra("img_url") != null) {
             Bitmap bitmap = get_img_url(intent.getStringExtra("img_url"));
             builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(bitmap).bigLargeIcon(null)).setLargeIcon(bitmap);
-            Log.d(TAG, intent.getStringExtra("img_url"));
         }
 
         Pushy.setNotificationChannel(builder, context);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationID, builder.build());
-        if (intent.getExtras() != null)
+        if (intent.getStringExtra("O") != null)
             if (intent.getStringExtra("O").equals("1"))
                 notificationManager.cancelAll();
     }

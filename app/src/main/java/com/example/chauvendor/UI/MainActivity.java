@@ -79,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
 
-        NOTIFICATION_LISTER();
+        NOTIFICATION_LISTER(new Keep_alive(), new Intent(), this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             CHECK_POLICY();
         STRICT_POLICY();
@@ -99,33 +100,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
-    public void NOTIFICATION_LISTER() {
-        if (!Pushy.isRegistered(getApplicationContext()))
-            new RegisterUser(this).execute();
-        Pushy.listen(this);
-        NOTIFICATION_LISTER_1();
-    }
-
-
-    private void NOTIFICATION_LISTER_1() {
+    public void NOTIFICATION_LISTER(Keep_alive keep_alive, Intent intent, AppCompatActivity application) {
 
         keep_alive = new Keep_alive();
-        intent = new Intent(this, keep_alive.getClass());
-        if (!isServicerunning(keep_alive.getClass()))
-            startService(intent);
+        intent = new Intent(application, keep_alive.getClass());
+        if (!isServicerunning(keep_alive.getClass(),application))
+            application.startService(intent);
 
-        if (!Pushy.isRegistered(getApplicationContext()))
-            new RegisterUser(this).execute();
-        Pushy.listen(this);
+        if (!Pushy.isRegistered(application))
+            new RegisterUser(application).execute();
+        Pushy.listen(application);
     }
 
 
-    private boolean isServicerunning(Class<? extends Keep_alive> aClass) {
+    private boolean isServicerunning(Class<? extends Keep_alive> aClass, AppCompatActivity application) {
 
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager manager = (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (aClass.getName().equals(serviceInfo.service.getClassName())) {
                 Log.d(TAG, " Service Already Running");
@@ -144,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         if (SDK_INT > 8) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
-            Log.d(TAG, " Called !");
         }
     }
 
@@ -211,9 +200,10 @@ public class MainActivity extends AppCompatActivity {
                 intent.addCategory(Intent.CATEGORY_HOME);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                free_memory();
             }
             back_pressed = System.currentTimeMillis();
-            free_memory();
+
         } else
             super.onBackPressed();
 

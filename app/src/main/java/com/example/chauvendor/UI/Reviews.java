@@ -12,13 +12,11 @@ import android.widget.ProgressBar;
 import com.example.chauvendor.Adapter.Reviews_adapter;
 import com.example.chauvendor.R;
 import com.example.chauvendor.model.Review_models;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
-import java.util.Map;
 
 public class Reviews extends AppCompatActivity {
 
@@ -45,7 +43,7 @@ public class Reviews extends AppCompatActivity {
             if(o.isSuccessful())
                 setLayout(o.getResult());
             else
-                Log.d(TAG, "Error Occurred onCreate: ");
+                Log.d(TAG, "Error Occurred  "+o.getException());
         });
     }
 
