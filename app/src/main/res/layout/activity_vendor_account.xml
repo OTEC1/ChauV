@@ -201,7 +201,7 @@
                                         android:background="@android:color/transparent"
                                         android:drawableTop="@drawable/ic_baseline_cloud_upload_24"
                                         android:gravity="center_horizontal"
-                                        android:text="Uploads"
+                                        android:text="PrePost"
                                         android:textAlignment="center"
                                         android:textAllCaps="false"
                                         android:textColor="#fff" />
@@ -229,6 +229,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@id/layer1"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="20dp" />
+
+
+                            <ProgressBar
+                                android:id="@+id/progressBar7"
+                                style="?android:attr/progressBarStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/layer1"
+                                android:visibility="invisible"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="20dp" />
 

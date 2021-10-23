@@ -14,4 +14,8 @@ public interface Calls {
 
     @GET("Banklist")
     Call<List<Map<String,Object>>>  get_list_of_bank();
+
+
+    @GET("food_category")
+    Call<List<Map<String,Object>>>  get_food_category();
 }

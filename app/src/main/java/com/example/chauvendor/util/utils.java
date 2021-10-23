@@ -143,38 +143,39 @@ public class utils {
 
 
 
-    public boolean bottom_nav(BottomNavigationView bottomNav, AppCompatActivity appCompatActivity, Bundle s) {
-        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.homes:
-                        if (SIGN_IN_USER()) {
-                            aBoolean = true;
-                            appCompatActivity.startActivity(new Intent(appCompatActivity, MainActivity.class));
-                            return true;
-                        } else
-                            request_user_sign_in(appCompatActivity);
+    public boolean bottom_nav(BottomNavigationView bottomNav, AppCompatActivity appCompatActivity, ProgressBar progressBar) {
 
-                    case R.id.carts:
-                        if (SIGN_IN_USER()) {
-                            aBoolean = false;
-                            appCompatActivity.startActivity(new Intent(appCompatActivity, Main_notification.class));
-                            return true;
-                        } else
-                            request_user_sign_in(appCompatActivity);
+        bottomNav.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.homes:
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (SIGN_IN_USER()) {
+                        aBoolean = true;
+                        appCompatActivity.startActivity(new Intent(appCompatActivity, MainActivity.class));
+                        return true;
+                    } else
+                        request_user_sign_in(appCompatActivity);
 
-                    case R.id.notification:
-                        if (SIGN_IN_USER()) {
-                            aBoolean = false;
-                            appCompatActivity.startActivity(new Intent(appCompatActivity, Vendor_account.class));
-                            return true;
-                        } else
-                            request_user_sign_in(appCompatActivity);
+                case R.id.carts:
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (SIGN_IN_USER()) {
+                        aBoolean = false;
+                        appCompatActivity.startActivity(new Intent(appCompatActivity, Main_notification.class));
+                        return true;
+                    } else
+                        request_user_sign_in(appCompatActivity);
 
-                }
-                return false;
+                case R.id.notification:
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (SIGN_IN_USER()) {
+                        aBoolean = false;
+                        appCompatActivity.startActivity(new Intent(appCompatActivity, Vendor_account.class));
+                        return true;
+                    } else
+                        request_user_sign_in(appCompatActivity);
+
             }
+            return false;
         });
         return aBoolean;
     }
@@ -190,14 +191,12 @@ public class utils {
         pack.put("item_id", result.get("item_id"));
         pack.put("quantity", result.get("quantity"));
         pack.put("cart_tracker", result.get("Cart_tracker"));
-
         return pack;
     }
 
 
     public Map<String, Object> map_data(QueryDocumentSnapshot result, String a) {
         Map<String, Object> pack = new TreeMap<>();
-
         pack.put("docs_id", result.getId());
         pack.put("dstatus", result.get("DStatus"));
         pack.put("TimeStamp", TIME_FORMAT(result.get("TimeStamp").toString()));
@@ -472,4 +471,8 @@ public class utils {
 //        if (fragment != null)
 //            activity.getSupportFragmentManager().beginTransaction().remove(fragment).commit();
 //    }
+
+
+// View view =getSupportActionBar().getCustomView();
+
 

@@ -83,6 +83,7 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
             intent.putExtra("data_key", items.get(position).get("cart_tracker").toString());
             intent.putExtra("docs_key", items.get(position).get("current_doc").toString());
             intent.putExtra("docID", items.get(position).get("docs_id").toString());
+            intent.putExtra("item_count", items.get(position).get("item_count").toString());
             intent.putExtra("user_img_url", IMGURL);
             o.getContext().startActivity(intent);
             if (!holder.mStatus.getText().equals("Seen"))

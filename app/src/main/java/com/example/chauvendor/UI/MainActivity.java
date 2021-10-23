@@ -26,6 +26,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 
 import com.example.chauvendor.R;
 import com.example.chauvendor.Running_Service.Keep_alive;
@@ -38,6 +39,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import me.pushy.sdk.Pushy;
@@ -47,16 +51,15 @@ import static com.example.chauvendor.constant.Constants.*;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
-    private Keep_alive keep_alive;
     private Bundle bundle = new Bundle();
-    private Intent intent;
+    private ProgressBar ui_loader;
 
 
     private String TAG = "MainActivity";
     private static long back_pressed;
     private static int Time_lapsed = 2000;
     private boolean decide = false;
-    private final boolean decision = false;
+
 
 
     @Override
@@ -78,20 +81,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
+        ui_loader = (ProgressBar) findViewById(R.id.ui_loader);
 
         NOTIFICATION_LISTER(new Keep_alive(), new Intent(), this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             CHECK_POLICY();
         STRICT_POLICY();
-
         if (!CHECKED())
             LOGIN();
         else if (FirebaseAuth.getInstance().getUid() == null)
             LOGIN();
         else if (FirebaseAuth.getInstance().getUid() != null && CHECKED()) {
             bundle.putString("UI_to_display", "2");
-            decide = new utils().bottom_nav(bottomNav, this, bundle);
+            decide = new utils().bottom_nav(bottomNav, this,ui_loader);
             new utils().quick_commission_call(TAG);
             new utils().openFragment(new home(), this, bundle);
         }
@@ -232,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void space(View view) {
     }
+
 
 
 }

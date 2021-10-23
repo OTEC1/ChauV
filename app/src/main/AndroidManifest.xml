@@ -29,8 +29,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:windowSoftInputMode="stateHidden|adjustPan"
         android:theme="@style/Theme.ChauVendor">
-        <activity android:name=".UI.Issues_submit"></activity>
+        <activity android:name=".UI.Issues_submit"/>
         <activity android:name=".UI.Reviews" />
         <activity android:name=".UI.Inner_notification" />
         <activity android:name=".UI.Vendor_account" />

@@ -9,7 +9,6 @@ public class User implements Parcelable {
              name,phone,member_T,app_user,
              img_url,token,business_details;
 
-
     private  int fair,good,bad;
 
 

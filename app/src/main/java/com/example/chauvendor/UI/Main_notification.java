@@ -71,7 +71,7 @@ public class Main_notification extends AppCompatActivity {
         bottom_nav = (BottomNavigationView) findViewById(R.id.bottomNav);
         progressBar = (ProgressBar) findViewById(R.id.progressBar6);
         mfirestore = FirebaseFirestore.getInstance();
-        new utils().bottom_nav(bottom_nav, this, bundle);
+        new utils().bottom_nav(bottom_nav, this, progressBar);
         list3 = new ArrayList<>();
         list4 = new ArrayList<>();
         Constants.IMGURL = getIntent().getStringExtra("user_img_url");

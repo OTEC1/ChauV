@@ -85,7 +85,7 @@ public class Inner_notification extends AppCompatActivity {
         mreport = (Button) findViewById(R.id.report);
         button = (Button) findViewById(R.id.call_out_to_delivery_agent);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNav);
-        new utils().bottom_nav(bottomNavigationView, this, new Bundle());
+        new utils().bottom_nav(bottomNavigationView, this,progressBar);
 
         Constants.IMGURL = getIntent().getStringExtra("user_img_url");
 
@@ -259,7 +259,7 @@ public class Inner_notification extends AppCompatActivity {
                 pay_load.put("Vendor_Phone", phone);
                 pay_load.put("doc_id_Gen", getIntent().getStringExtra("docID"));
                 pay_load.put("Order_id", getIntent().getStringExtra("data_key"));
-                pay_load.put("Order_items", list2.size());
+                pay_load.put("Order_items", Integer.parseInt(getIntent().getStringExtra("item_count")));
                 pay_load.put("user_img_url", Constants.IMGURL);
                 pay_load.put("Vendor", "Vendor: " + user1.getUser().getName());
                 pay_load.put("Vendor_img_url", img_url);

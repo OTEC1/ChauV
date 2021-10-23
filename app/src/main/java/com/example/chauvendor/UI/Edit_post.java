@@ -134,7 +134,7 @@ public class Edit_post extends Fragment {
                     FirebaseFirestore.getInstance().collection(getString(R.string.VENDORS_UPLOAD)).document("room").collection(FirebaseAuth.getInstance().getUid()).document(s.getId())
                             .delete().addOnCompleteListener(a -> {
                         if (a.isSuccessful())
-                            Log.d(TAG, " Deleted ");
+                            new utils().message2("Deleted ", requireActivity());
                         else
                             Log.d(TAG, "Error occurred " + a.getException());
 
