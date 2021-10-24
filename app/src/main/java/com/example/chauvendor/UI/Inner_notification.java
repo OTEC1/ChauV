@@ -54,6 +54,7 @@ public class Inner_notification extends AppCompatActivity {
     private TextView totals;
     private Button button, mreport;
     private  User user2;
+    private long h;
 
 
     private List<String> token_gotten;
@@ -119,8 +120,14 @@ public class Inner_notification extends AppCompatActivity {
                     for (QueryDocumentSnapshot x : n.getResult()) {
                         if (x.get("Cart_tracker").toString().equals(getIntent().getStringExtra("data_key"))) {
                             list2.add(new utils().map(x));
-                            new utils().sum_quantity(x, getApplicationContext(), totals, 0, 0);
                             set_layout(list2);
+                            if(!x.get("star_boi").toString().equals("Self serve"))
+                            new utils().sum_quantity(x, getApplicationContext(), totals, 0, 0);
+                            else
+                            {
+                                h += Long.parseLong(x.get("food_price").toString());
+                                totals.setText(""+h);
+                            }
                         }
                     }
                 } else

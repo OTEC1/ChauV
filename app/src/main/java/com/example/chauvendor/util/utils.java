@@ -191,6 +191,8 @@ public class utils {
         pack.put("item_id", result.get("item_id"));
         pack.put("quantity", result.get("quantity"));
         pack.put("cart_tracker", result.get("Cart_tracker"));
+        pack.put("star_boi", result.get("star_boi"));
+        pack.put("food", result.get("food"));
         return pack;
     }
 

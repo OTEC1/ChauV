@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chauvendor.R;
+import com.example.chauvendor.util.Constants;
 import com.example.chauvendor.util.utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +23,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Notification_children_view extends RecyclerView.Adapter<Notification_children_view.MyHolder> {
 
-    private List<Map<String,Object>> items;
+    private List<Map<String, Object>> items;
     private Context context;
-    public Notification_children_view(Context context, List<Map<String,Object>> list){
+
+    public Notification_children_view(Context context, List<Map<String, Object>> list) {
         this.items = list;
         this.context = context;
     }
@@ -40,14 +42,21 @@ public class Notification_children_view extends RecyclerView.Adapter<Notificatio
     @Override
     public void onBindViewHolder(@NonNull @NotNull Notification_children_view.MyHolder holder, int position) {
 
-        new utils().img_load(holder.poster_value.getContext(),new utils().Stringnify(items.get(position).get("img_url")), holder.progressBar, holder.poster_value);
-        holder.ntime_stamp.setText("Date: "+new utils().Stringnify(items.get(position).get("Timestamp")));
-        holder.nvendor_id.setText(new utils().Stringnify(items.get(position).get("doc_id")));
-        holder.nfood_name.setText("Food: "+new utils().Stringnify(items.get(position).get("food_name")));
-        holder.nfood_price.setText("Price: "+new utils().Stringnify(items.get(position).get("food_price")));
-        holder.nitem_id.setText(new utils().Stringnify(items.get(position).get("item_id")));
-        holder.nfood_quantity.setText("Quantity: "+new utils().Stringnify(items.get(position).get("quantity")));
+        if (!items.get(position).get("star_boi").toString().equals("Self serve")) {
+            new utils().img_load(holder.poster_value.getContext(), new utils().Stringnify(items.get(position).get("img_url")), holder.progressBar, holder.poster_value);
+            holder.ntime_stamp.setText("Date: " + new utils().Stringnify(items.get(position).get("Timestamp")));
+            holder.nvendor_id.setText(new utils().Stringnify(items.get(position).get("doc_id")));
+            holder.nfood_name.setText("Food: " + new utils().Stringnify(items.get(position).get("food_name")));
+            holder.nfood_price.setText("Price: " + new utils().Stringnify(items.get(position).get("food_price")));
+            holder.nitem_id.setText(new utils().Stringnify(items.get(position).get("item_id")));
+            holder.nfood_quantity.setText("Quantity: " + new utils().Stringnify(items.get(position).get("quantity")));
 
+        } else if (items.get(position).get("star_boi").toString().equals("Self serve")) {
+            holder.nfood_name.setText("Item: " + new utils().Stringify(items.get(position).get("food")));
+            holder.nfood_price.setText("Amount: " + new utils().Stringify(items.get(position).get("food_price")));
+            holder.nfood_quantity.setText("Date: " + new utils().Stringnify(items.get(position).get("Timestamp")));
+            new utils().img_load(holder.poster_value.getContext(), Constants.IMG_URL + Constants.JOIN + new utils().Stringnify(items.get(position).get("food"))+ ".png", holder.progressBar, holder.poster_value);
+        }
     }
 
     @Override
@@ -58,7 +67,7 @@ public class Notification_children_view extends RecyclerView.Adapter<Notificatio
 
     class MyHolder extends RecyclerView.ViewHolder {
         private CircleImageView poster_value;
-        private TextView nfood_name,nfood_price,nfood_quantity,nitem_id,nvendor_id,ntime_stamp;
+        private TextView nfood_name, nfood_price, nfood_quantity, nitem_id, nvendor_id, ntime_stamp;
         private ProgressBar progressBar;
 
         public MyHolder(View view) {
