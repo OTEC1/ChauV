@@ -51,11 +51,6 @@ public class Notification_children_view extends RecyclerView.Adapter<Notificatio
             holder.nitem_id.setText(new utils().Stringnify(items.get(position).get("item_id")));
             holder.nfood_quantity.setText("Quantity: " + new utils().Stringnify(items.get(position).get("quantity")));
 
-        } else if (items.get(position).get("star_boi").toString().equals("Self serve")) {
-            holder.nfood_name.setText("Item: " + new utils().Stringify(items.get(position).get("food")));
-            holder.nfood_price.setText("Amount: " + new utils().Stringify(items.get(position).get("food_price")));
-            holder.nfood_quantity.setText("Date: " + new utils().Stringnify(items.get(position).get("Timestamp")));
-            new utils().img_load(holder.poster_value.getContext(), Constants.IMG_URL + Constants.JOIN + new utils().Stringnify(items.get(position).get("food"))+ ".png", holder.progressBar, holder.poster_value);
         }
     }
 

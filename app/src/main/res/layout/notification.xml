@@ -14,9 +14,19 @@
         app:cardCornerRadius="10dp">
 
 
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/pro"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:theme="@style/AppTheme.primary"
+                android:visibility="invisible" />
 
 
             <TextView

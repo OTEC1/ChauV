@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -60,7 +61,6 @@ public class Main_notification extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        super.onBackPressed();
     }
 
     @Override
@@ -121,7 +121,6 @@ public class Main_notification extends AppCompatActivity {
     }
 
     private void Check_to_popout(ListIterator<Map<String, Object>> op) {
-
         while (op.hasNext()) {
             Map<String, Object> map = op.next();
             list4.add(new utils().mapping(map));
@@ -135,15 +134,14 @@ public class Main_notification extends AppCompatActivity {
     public List<Map<String, Object>> MapSort(List<Map<String, Object>> mapping) {
         List<Map<String, Object>> h = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            Collections.sort(mapping, new sortItems().reversed());
+            Collections.sort(mapping, new sortItems());
         for (Map<String, Object> c : mapping)
             h.add(c);
         return h;
     }
 
 
-    class sortItems implements Comparator<Map<String, Object>> {
-
+    static class sortItems implements Comparator<Map<String, Object>> {
         @Override
         public int compare(Map<String, Object> o1, Map<String, Object> o2) {
             return Objects.requireNonNull(o1.get("TimeStamp")).toString().compareTo(Objects.requireNonNull(o2.get("TimeStamp")).toString());

@@ -211,6 +211,9 @@ public class utils {
         pack.put("current_doc", a);
         pack.put("cart_tracker", result.get("Cart_tracker"));
         pack.put("OBJ", result.get("OBJ"));
+        pack.put("star_boi", result.get("star_boi"));
+        pack.put("user_id", result.get("user_id"));
+        pack.put("cart_session", result.get("cart_session"));
 
         return pack;
     }
@@ -245,6 +248,8 @@ public class utils {
         pack.put("current_doc", result.get("current_doc"));
         pack.put("cart_tracker", result.get("cart_tracker"));
         pack.put("OBJ", result.get("OBJ"));
+        pack.put("star_boi", result.get("star_boi"));
+        pack.put("user_id", result.get("user_id"));
 
 
         return pack;
