@@ -3,8 +3,7 @@
     package="com.example.chauvendor">
 
 
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -29,22 +28,48 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:windowSoftInputMode="stateHidden|adjustPan"
-        android:theme="@style/Theme.ChauVendor">
-        <activity android:name=".UI.Issues_submit"/>
-        <activity android:name=".UI.Reviews" />
-        <activity android:name=".UI.Inner_notification" />
-        <activity android:name=".UI.Vendor_account" />
-        <activity android:name=".UI.Main_notification" />
-        <activity android:name=".UI.Reg" />
-        <activity android:name=".UI.Login" />
-        <activity android:name=".UI.MainActivity">
+        android:theme="@style/Theme.ChauVendor"
+        android:windowSoftInputMode="stateHidden|adjustPan">
+        <activity
+            android:name=".UI.Issues_submit"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Reviews"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Inner_notification"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Vendor_account"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Main_notification"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Reg"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.Login"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name=".UI.MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Pushy Declarations -->
+        </activity>
+
+        <!-- Pushy Declarations -->
         <receiver
             android:name=".Running_Service.PushReceiver"
             android:exported="false">
