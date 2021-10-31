@@ -150,6 +150,7 @@ public class Main_notification extends AppCompatActivity {
 
 
     private void set_layout(List<Map<String, Object>> list2) {
+        Collections.reverse(list2);
         LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         adapter = new Notification_main_view(getApplicationContext(), list2);
         recyclerView.setLayoutManager(manager);

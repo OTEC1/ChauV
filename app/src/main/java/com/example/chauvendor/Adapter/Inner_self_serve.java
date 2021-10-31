@@ -17,6 +17,7 @@ import com.example.chauvendor.util.utils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +34,6 @@ public class Inner_self_serve extends RecyclerView.Adapter<Inner_self_serve.Myho
     private List<Map<String, Object>> obj;
     private int last_index;
     private String TAG = "Inner_self_serve";
-    private long total;
 
 
     public Inner_self_serve(List<Map<String, Object>> obj, View u) {
@@ -62,10 +62,14 @@ public class Inner_self_serve extends RecyclerView.Adapter<Inner_self_serve.Myho
                 holder.another_plate.setText("");
         }
 
-
-        total += Long.parseLong(obj.get(position).get("food_price").toString());
-        sub_totals_.setText(holder.another_plate.getContext().getString(R.string.NAIRA) + total);
-
+        List<Long> amount = new ArrayList<>();
+        for(Map<String,Object> price : obj){
+            amount.add(Long.parseLong(price.get("food_price").toString()));
+        }
+        int s=0;
+        for(Long item : amount)
+           s += item;
+        sub_totals_.setText(holder.another_plate.getContext().getString(R.string.NAIRA) + s);
 
         holder.food_quantity.setText(obj.get(position).get("food_price").toString());
         holder.food_name.setText(obj.get(position).get("food").toString());

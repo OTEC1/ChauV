@@ -12,6 +12,8 @@ import android.widget.ProgressBar;
 import com.example.chauvendor.Adapter.Reviews_adapter;
 import com.example.chauvendor.R;
 import com.example.chauvendor.model.Review_models;
+import com.example.chauvendor.util.utils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -23,6 +25,7 @@ public class Reviews extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar mprogressBar7;
     private Reviews_adapter reviews_adapter;
+    private BottomNavigationView bottomNav;
 
 
 
@@ -35,6 +38,8 @@ public class Reviews extends AppCompatActivity {
         setContentView(R.layout.activity_reviews);
         recyclerView = (RecyclerView) findViewById(R.id.main_recycler_view);
         mprogressBar7 = (ProgressBar) findViewById(R.id.progressBar7);
+        bottomNav = (BottomNavigationView) findViewById(R.id.bottomNav);
+        new utils().bottom_nav(bottomNav, this,mprogressBar7);
         REQUEST_REVIEWS();
 }
 

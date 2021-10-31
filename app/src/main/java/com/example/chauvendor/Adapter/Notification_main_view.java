@@ -20,6 +20,7 @@ import com.example.chauvendor.R;
 import com.example.chauvendor.UI.Inner_notification;
 import com.example.chauvendor.UI.Issues_submit;
 import com.example.chauvendor.util.utils;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -101,17 +102,13 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
 
             if (items.get(position).get("star_boi").toString().equals("Vendor Option")) {
-                o.getContext().startActivity(intent);
-                holder.pro.setVisibility(View.INVISIBLE);
+                o.getContext().startActivity(intent);holder.pro.setVisibility(View.INVISIBLE);
             } else
-                DIALOG(o, items.get(position).get("cart_tracker").toString(),
-                        items.get(position).get("user_id").toString(), holder.pro,
-                        items.get(position).get("order_id").toString(),
-                        items.get(position).get("item_count").toString(),
-                        items.get(position).get("docs_id").toString());
+                DIALOG(o, items.get(position).get("cart_tracker").toString(), items.get(position).get("user_id").toString(), holder.pro, items.get(position).get("order_id").toString(), items.get(position).get("item_count").toString(), items.get(position).get("docs_id").toString());
+
 
             if (!holder.mStatus.getText().equals("Seen"))
-                UPDATE_DOC(items.get(position).get("current_doc"), items.get(position).get("order_id"), holder.mStatus.getContext(), Boolean.getBoolean("vstatus"));
+                UPDATE_DOC(items.get(position).get("user_id"), items.get(position).get("docs_id"), holder.mStatus.getContext(), Boolean.getBoolean("vstatus"));
 
 
         });
@@ -216,12 +213,11 @@ public class Notification_main_view extends RecyclerView.Adapter<Notification_ma
 
 
     private void UPDATE_DOC(Object current_doc, Object doc, Context context, boolean status) {
-
         if (!status) {
             Map<String, Object> p = new HashMap<>();
             p.put("OBJ", true);
-            FirebaseFirestore.getInstance().collection(context.getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(current_doc.toString()).document(doc.toString())
-                    .update(p)
+          DocumentReference  s = FirebaseFirestore.getInstance().collection(context.getString(R.string.Paid_Vendors_Brand_Section)).document("Orders").collection(current_doc.toString()).document(doc.toString());
+               s.update(p)
                     .addOnCompleteListener(i -> {
                         if (i.isSuccessful())
                             Log.d(TAG, "UPDATE_DOC: Viewed Order");

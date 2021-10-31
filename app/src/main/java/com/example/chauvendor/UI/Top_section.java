@@ -52,11 +52,6 @@ public class Top_section extends Fragment {
 
                 switch (item.getItemId()) {
 
-                    case R.id.search:
-                        search();
-                        return true;
-
-
                     case R.id.sign_in:
                         if (FirebaseAuth.getInstance().getUid() == null)
                             signin();
@@ -108,10 +103,4 @@ public class Top_section extends Fragment {
         FirebaseAuth.getInstance().signOut();
     }
 
-
-    public void search() {
-        bundle = new Bundle();
-        bundle.putString("ID", "S");
-        new utils().open_Fragment(new Search(), "Search", requireContext(), bundle, R.id.frameLayout);
-    }
 }
