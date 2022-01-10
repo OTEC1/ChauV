@@ -94,6 +94,11 @@ public class utils {
     }
 
 
+    public void long_message(String m, Context view) {
+        Toast.makeText(view, m, Toast.LENGTH_LONG).show();
+    }
+
+
     public void message2(String s, Activity a) {
         View parentLayout = a.findViewById(android.R.id.content);
         Snackbar snack = Snackbar.make(parentLayout, s, Snackbar.LENGTH_LONG);
@@ -276,14 +281,7 @@ public class utils {
     }
 
 
-    //open from  fragment
-    public void openFragments(Fragment fragment, FragmentActivity appCompatActivity, Bundle s) {
-        FragmentTransaction fragmentTransaction = appCompatActivity.getSupportFragmentManager().beginTransaction();
-        fragment.setArguments(s);
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+
 
 
     //Open Fragment from  Adapter Class
@@ -471,6 +469,18 @@ public class utils {
     }
 }
 
+
+
+
+
+    //open from  fragment
+//    public void openFragments(Fragment fragment, FragmentActivity appCompatActivity, Bundle s) {
+//        FragmentTransaction fragmentTransaction = appCompatActivity.getSupportFragmentManager().beginTransaction();
+//        fragment.setArguments(s);
+//        fragmentTransaction.replace(R.id.frameLayout, fragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
+//    }
 
 //--------------------Remove a particular fragment  by tag--------------------------------//
 //    public void clears(AppCompatActivity activity) {

@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.example.chauvendor.R;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,7 +34,7 @@ public class Keep_alive extends Service {
             Log.d(TAG,"Loop service Started ! ");
         }
         else
-            startForeground(10,new Notification());
+            startForeground(0,new Notification());
     }
 
 
@@ -48,6 +50,7 @@ public class Keep_alive extends Service {
 
         Notification notification= noBuilder.setOngoing(true)
                 .setContentTitle("Chauvendor is running")
+                .setSmallIcon(R.drawable.notify)
                 .setPriority(NotificationManager.IMPORTANCE_MIN)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .build();

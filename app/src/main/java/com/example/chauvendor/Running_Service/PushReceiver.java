@@ -32,15 +32,17 @@ public class  PushReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         Intent intent1 = new Intent(context, Main_notification.class);
         String  notificationText = intent.getStringExtra("user");
-        int notificationID = new Random().nextInt(3000);
         intent1.putExtra("ID", intent.getStringExtra("ID"));
         intent1.putExtra("docs", intent.getStringExtra("docs"));
         intent1.putExtra("user_img_url", intent.getStringExtra("user_img_url"));
+
+        int notificationID = new Random().nextInt(3000);
         PendingIntent  pendingIntent = PendingIntent.getActivity(context,0,intent1,PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.notify))
                 .setSmallIcon(R.drawable.notify)
                 .setContentTitle(NOTIFICATION_TITLE)
                 .setContentText(notificationText)
@@ -61,6 +63,8 @@ public class  PushReceiver extends BroadcastReceiver {
         if (intent.getStringExtra("O") != null)
             if (intent.getStringExtra("O").equals("1"))
                 notificationManager.cancelAll();
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
 

@@ -306,19 +306,16 @@ public class Vendor_account extends AppCompatActivity {
     //Step 5
     private void credentials(final String m) {
         DocumentReference user = mfirebaseFirestore.collection("east").document("lab");
-        user.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    try {
-                        if (task.getResult().getString("p1").length() > 0 && task.getResult().getString("p2").length() > 0 && task.getResult().getString("p3").length() > 0)
-                            send_data_to_s3(imgUri, m, task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
-                    } catch (URISyntaxException e) {
-                        message2(e.toString());
-                        hide_progress();
-                    }
-
+        user.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                try {
+                    if (task.getResult().getString("p1").length() > 0 && task.getResult().getString("p2").length() > 0 && task.getResult().getString("p3").length() > 0)
+                        send_data_to_s3(imgUri, m, task.getResult().getString("p1"), task.getResult().getString("p2"), task.getResult().getString("p3"));
+                } catch (URISyntaxException e) {
+                    message2(e.toString());
+                    hide_progress();
                 }
+
             }
         });
     }

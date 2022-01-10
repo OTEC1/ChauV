@@ -187,9 +187,9 @@ public class Inner_notification extends AppCompatActivity {
 
             double final_result = start_p.distanceTo(stop_p);
             long vendor_location = Math.round(final_result);
-            if (vendor_location < 5000)
+            if (vendor_location < 10500)
                 SUM(m, timeStamp, strings, total, cartTracker, doc_id, context, item_count,user_id,order_id);
-            else if (vendor_location < 7000) {
+            else if (vendor_location < 20500) {
                 new utils().message("No Delivery close by increased search ", this);
                 SUM(m, timeStamp, strings, total, cartTracker, doc_id, context, item_count,user_id,order_id);
             } else
@@ -239,6 +239,7 @@ public class Inner_notification extends AppCompatActivity {
     private void SEND_NOTIFICATION(Set<Object> token_approved, String user_id, String phone, GeoPoint geo_point, String img_url, String phone_no, Object timestamp, String name, String total, String cartTracker, String doc_id, String item_count,String order_id, Context context) {
         if (Constants.notification_count == 0)
             for (Object to : token_approved) {
+                Log.d(TAG, "SEND_NOTIFICATION: "+to);
                 Map<String, Object> pl = new HashMap<>();
                 pl.put("Client_ID", user_id);
                 pl.put("Client_name", name);
@@ -261,6 +262,7 @@ public class Inner_notification extends AppCompatActivity {
                     Pusher.sendPush(push);
                     Constants.notification_count++;
                     doc(cartTracker, order_id,item_count,doc_id,user_id, new ArrayList<>(), 1, context, total);
+                    Log.d(TAG, "SEND_NOTIFICATION: ");
                 } catch (Exception ex) {
                     Log.d(TAG, "SEND_NOTIFICATION Error occurred " + ex.toString());
                 }

@@ -47,15 +47,14 @@ import static com.example.chauvendor.constant.Constants.READ_STORAGE_PERMISSION_
 
 public class Login extends AppCompatActivity {
 
-    private TextView link_register, missue_report;
+    private TextView link_register, missue_report,forgot_pass;
     private EditText editText, editText1;
     private Button button;
     private ProgressBar progressBar;
     private LocationManager locationManager;
     private FirebaseFirestore firebaseFirestore;
     private RelativeLayout home_screen;
-    private Keep_alive keep_alive;
-    private Intent intent;
+
 
     private boolean status;
     private static final String TAG = "LoginActivity";
@@ -85,12 +84,17 @@ public class Login extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         home_screen = (RelativeLayout) findViewById(R.id.home_screen);
         missue_report = (TextView) findViewById(R.id.issue_report);
+        forgot_pass = (TextView) findViewById(R.id.forgot_pass);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         new MainActivity().NOTIFICATION_LISTER(new Keep_alive(), new Intent(), this);
         bull_eye();
 
         home_screen.setOnClickListener(s -> {
+        });
+
+        forgot_pass.setOnClickListener(o->{
+            startActivity(new Intent(getApplicationContext(),Forgot_Pass.class));
         });
 
         link_register.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), Reg.class)));

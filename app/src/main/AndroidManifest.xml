@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.chauvendor">
 
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -30,6 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChauVendor"
         android:windowSoftInputMode="stateHidden|adjustPan">
+        <activity android:name=".UI.Forgot_Pass"></activity>
         <activity
             android:name=".UI.Issues_submit"
             android:screenOrientation="portrait"
@@ -67,9 +67,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Pushy Declarations -->
+        </activity> <!-- Pushy Declarations -->
         <receiver
             android:name=".Running_Service.PushReceiver"
             android:exported="false">

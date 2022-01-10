@@ -37,6 +37,7 @@
     <string name="CAT_UPLOADS">Category Uploads</string>
     <string name="having_issues_with_login_or_registration">Having issues with login or registration ?</string>
     <string name="Vendor_reg_payment">Vendor Registration Payment</string>
+    <string name="forgot_email">Enter email</string>
 
 
 </resources>
