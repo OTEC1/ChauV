@@ -428,23 +428,23 @@ public class utils {
 
     public boolean verify(EditText editText1, EditText editText2, EditText editText3, EditText editText4, EditText editText5, EditText editText6, String string, AppCompatActivity context) {
         if (editText1.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText1, "Pls fill out field");
+            check_edit_text(editText1, "Pls fill out field");
             return false;
         } else if (editText2.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText2, "Pls fill out field");
+            check_edit_text(editText2, "Pls fill out field");
             return false;
         } else if (editText3.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText3, "Pls fill out field");
+            check_edit_text(editText3, "Pls fill out field");
             return false;
         } else if (editText4.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText4, "Pls fill out field");
+             check_edit_text(editText4, "Pls fill out field");
             return false;
         } else if (editText5.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText5, "Pls fill out field");
+            check_edit_text(editText5, "Pls fill out field");
             return false;
 
         } else if (editText6.getText().toString().isEmpty()) {
-            new utils().check_edit_text(editText6, "Pls fill out field");
+            check_edit_text(editText6, "Pls fill out field");
             return false;
 
         } else if (!doStringsMatch(editText4.getText().toString(), editText5.getText().toString())) {
