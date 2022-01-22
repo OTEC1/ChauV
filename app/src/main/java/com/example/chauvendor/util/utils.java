@@ -94,7 +94,7 @@ public class utils {
     }
 
 
-    public void long_message(String m, Context view) {
+    public void Long_message(String m, Context view) {
         Toast.makeText(view, m, Toast.LENGTH_LONG).show();
     }
 
